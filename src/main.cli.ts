@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 import {readdir} from 'node:fs/promises';
-import {resolve, dirname} from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {resolve} from 'node:path';
 
 import {CLIApplication} from './cli/index.js';
 import {Command} from './cli/commands/command.interface.js';
+import {getCurrentModuleDirectoryPath} from './shared/helpers/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
-const commandsDirectory = resolve(__dirname,'cli','commands');
+const commandsDirectory = resolve(getCurrentModuleDirectoryPath(),'cli','commands');
 
 const bootstrap = async () => {
   const files = await readdir(commandsDirectory);
