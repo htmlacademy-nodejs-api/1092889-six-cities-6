@@ -1,0 +1,120 @@
+{
+  "api": {
+    "titles": [
+      "Good old apartment",
+      "Good new apartment",
+      "Average old apartment",
+      "Average new apartment",
+      "Awful new apartment",
+      "Awful old apartment"
+    ],
+    "descriptions": [
+      "apartment with a wonderful view on a waterfall",
+      "apartment with a wonderful view on a mountains",
+      "apartment with a wonderful view on an ocean",
+      "apartment with a wonderful view on a city",
+      "apartment with a wonderful view on a countryside",
+      "apartment with a wonderful view on a local dump"
+    ],
+    "cities": [
+      "Paris",
+      "Cologne",
+      "Hamburg",
+      "Brussels",
+      "Amsterdam",
+      "Dusseldorf"
+    ],
+    "previewImages": [
+      "previewImage1.jpg",
+      "previewImage2.jpg",
+      "previewImage3.jpg",
+      "previewImage4.jpg",
+      "previewImage5.jpg",
+      "previewImage6.jpg"
+    ],
+    "offerImages": [
+      "offerImage1/1.jpg",
+      "offerImage1/2.jpg",
+      "offerImage1/3.jpg",
+      "offerImage1/4.jpg",
+      "offerImage1/5.jpg",
+      "offerImage1/6.jpg",
+      "offerImage2/1.jpg",
+      "offerImage2/2.jpg",
+      "offerImage2/3.jpg",
+      "offerImage2/4.jpg",
+      "offerImage2/5.jpg",
+      "offerImage2/6.jpg"
+    ],
+    "types": [
+      "room",
+      "house",
+      "apartment",
+      "hotel"
+    ],
+    "goods": [
+      "Breakfast",
+      "Air conditioning",
+      "Laptop friendly workspace",
+      "Baby seat",
+      "Washer",
+      "Towels",
+      "Fridge"
+    ],
+    "userNames": [
+      "John",
+      "Paul",
+      "Jacques",
+      "Karl",
+      "Rotem",
+      "Jesse",
+      "Finn"
+    ],
+    "locations": [
+      {
+        "latitude": 48.85661,
+        "longitude": 2.351499
+      },
+      {
+        "latitude": 50.938361,
+        "longitude": 6.959974
+      },
+      {
+        "latitude": 50.846557,
+        "longitude":  4.351697
+      },
+      {
+        "latitude": 52.370216,
+        "longitude": 4.895168
+      },
+      {
+        "latitude": 53.550341,
+        "longitude": 10.000654
+      },
+      {
+        "latitude": 51.225402,
+        "longitude": 6.776314
+      }
+    ],
+    "emails": [
+      "example1@mail.com",
+      "example2@mail.com",
+      "example3@mail.com",
+      "example4@mail.com",
+      "example5@mail.com",
+      "example6@mail.com"
+    ],
+    "avatars": [
+      "avatar1.png",
+      "avatar2.png",
+      "avatar3.png",
+      "avatar4.png",
+      "avatar5.png",
+      "avatar6.png"
+    ],
+    "userTypes": [
+      "regular",
+      "pro"
+    ]
+  }
+}

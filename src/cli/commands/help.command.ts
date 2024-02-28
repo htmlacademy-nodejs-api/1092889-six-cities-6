@@ -12,9 +12,10 @@ class HelpCommand implements Command {
         Пример:
             cli.js --<command> [--arguments]
         Команды:
-            --version:                   ${chalk.green('# выводит информации о версии приложения.')}
-            --help:                      ${chalk.green('# выводит информацию о списке поддерживаемых команд.')}
-            --import <path>:             ${chalk.green('# импортирует данные из TSV-файла.')}
+            --version:                          ${chalk.green('# выводит информации о версии приложения.')}
+            --help:                             ${chalk.green('# выводит информацию о списке поддерживаемых команд.')}
+            --import <path>:                    ${chalk.green('# импортирует данные из TSV-файла.')}
+            --generate <n> <filepath> <url>     ${chalk.green('# генерирует произвольное количество тестовых наборов')}
     `);
   }
 }
