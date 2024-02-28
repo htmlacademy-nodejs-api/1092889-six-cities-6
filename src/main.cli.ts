@@ -13,7 +13,7 @@ const commandsDirectory = resolve(__dirname,'cli','commands');
 
 const bootstrap = async () => {
   const files = await readdir(commandsDirectory);
-  const commandFiles = files.filter((fileName) => fileName.endsWith('command.ts'));
+  const commandFiles = files.filter((fileName) => fileName.endsWith('command.js'));
   const commands: Command[] = [];
 
   for (const file of commandFiles) {

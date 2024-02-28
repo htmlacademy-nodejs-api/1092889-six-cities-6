@@ -1,71 +1,41 @@
 import {FileReader} from './file-reader.interface.js';
-import {readFile} from 'node:fs/promises';
-import {Goods, Offer, OfferType, UserType} from '../../types/index.js';
-import {City} from '../../types/city.type.js';
-import {ImageExtType} from '../../types/common.type.js';
+import {createReadStream} from 'node:fs';
+import {EventEmitter} from 'node:events';
 
-class TsvFileReader implements FileReader{
-  private rawData = '';
+const CHUNK_SIZE = 16384;
 
+class TSVFileReader extends EventEmitter implements FileReader{
   constructor(
-    private readonly filename: string
-  ) {}
+    private readonly filename: string) {
+    super();
+  }
 
   public async read() {
-    this.rawData = await readFile(this.filename, { encoding: 'utf-8'});
-  }
+    const readStream = createReadStream(this.filename, {
+      highWaterMark: CHUNK_SIZE,
+      encoding: 'utf-8'
+    });
 
-  public toArray(): Offer[] {
-    if(!this.rawData) {
-      throw new Error('File was not read');
+    let remainingData = '';
+    let nextLinePosition = -1;
+    let importedRowCount = 0;
+
+    for await (const chunk of readStream) {
+      remainingData += chunk.toString();
+
+      while ((nextLinePosition = remainingData.indexOf('\n')) >= 0) {
+        const completeRow = remainingData.slice(0, nextLinePosition + 1);
+        remainingData = remainingData.slice(++nextLinePosition);
+        importedRowCount++;
+
+        this.emit('line', completeRow);
+      }
     }
 
-    return this.rawData
-      .split('\n')
-      .filter((row) => row.trim().length > 0)
-      .map((line) => line.split('\t'))
-      .map(([
-        title,
-        description,
-        date,
-        city,
-        previewImage,
-        images,
-        isPremium,
-        isFavorite,
-        rating,
-        type,
-        bedrooms,
-        maxAdults,
-        price,
-        goods,
-        name,
-        email,
-        avatar,
-        userType,
-        comments,
-        longitude,
-        latitude]) => (
-        {
-          title,
-          description,
-          date: new Date(date),
-          city: city as City,
-          previewImage: previewImage as ImageExtType,
-          images: images.split(' ') as ImageExtType[],
-          isPremium: (isPremium === 'true'),
-          isFavorite: (isFavorite === 'true'),
-          rating: Number(rating),
-          type: type as OfferType,
-          bedrooms: Number(bedrooms),
-          maxAdults: Number(maxAdults),
-          price: Number(price),
-          goods: goods.trim().split(' ').map((el) => el.replace('-', ' ')) as Goods[],
-          author: {name, email, avatar: avatar as ImageExtType, type: userType as UserType},
-          comments: Number(comments),
-          location: {longitude: Number(longitude), latitude: Number(latitude)}
-        }));
+    this.emit('end', importedRowCount);
   }
+
+
 }
 
-export {TsvFileReader};
+export {TSVFileReader};
