@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import 'reflect-metadata';
 import {readdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
@@ -7,7 +8,7 @@ import {Command} from './cli/commands/command.interface.js';
 import {getCurrentModuleDirectoryPath} from './shared/helpers/index.js';
 
 
-const commandsDirectory = resolve(getCurrentModuleDirectoryPath(),'cli','commands');
+const commandsDirectory = resolve(getCurrentModuleDirectoryPath(),'../','../','cli','commands');
 
 const bootstrap = async () => {
   const files = await readdir(commandsDirectory);

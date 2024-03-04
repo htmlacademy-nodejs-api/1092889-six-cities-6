@@ -1,5 +1,6 @@
 import {Location} from './location.type.js';
 
+
 type MockServerData = {
   titles: string[],
   descriptions: string[],

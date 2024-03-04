@@ -1,6 +1,4 @@
-import {Goods, Offer, OfferType, UserType} from '../types/index.js';
-import {City} from '../types/city.type.js';
-import {ImageExtType} from '../types/common.type.js';
+import {Goods, Offer, OfferType, UserType, ImageExtType, City} from '../types/index.js';
 
 const createOffer = (offerData: string): Offer => {
   const [

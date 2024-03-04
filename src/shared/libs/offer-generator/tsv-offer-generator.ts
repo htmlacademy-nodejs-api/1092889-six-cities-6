@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
 import {OfferGenerator} from './offer-generator.interface.js';
-import {MockServerData} from '../../types/index.js';
+import {Location, MockServerData} from '../../types/index.js';
 import {generateRandomValue, getRandomItem, getRandomItems, generateRandomBoolean} from '../../helpers/index.js';
-import {Location} from '../../types/location.type.js';
 
 const enum Price {
   MIN = 100,
@@ -64,7 +63,7 @@ class TSVOfferGenerator implements OfferGenerator{
     return [title, description, date, city, previewImage,
       offerImages, isPremium, isFavorite, rating,
       type, rooms, maxAdults, price, goods, userName,
-      email, avatar, userType, comments, location.latitude, location.longitude
+      email, avatar, userType, comments, location
     ].join('\t');
   }
 

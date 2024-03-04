@@ -5,8 +5,7 @@ type UserType = 'regular' | 'pro'
 type User = {
   name: string,
   email: string,
-  avatar?: ImageExtType
-  password: string,
+  avatar: ImageExtType
   type: UserType
 }
 
