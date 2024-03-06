@@ -1,0 +1,591 @@
+openapi: 3.1.0
+info:
+  title: API сервер для проекта "Six-cities"
+  description: |-
+    * Список ресурсов и маршрутов сервиса "Six-cities"
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+tags:
+  - name: offers
+    description: действия с предложениями
+  - name: users
+    description: действия с пользователями
+  - name: comments
+    description: действия с комментариями
+paths:
+  /users/register:
+    post:
+      tags:
+        - user
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя
+
+      requestBody:
+        description: Информация для создания нового пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+      responses:
+        "201":
+          description: Пользователь зарегестрирован. Объект пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "409":
+          description: Пользователь с таким email уже зарегестрирован
+  /users/login:
+    post:
+      tags:
+        - user
+      summary: Авторизация пользователя
+      description: Авторизирует пользователя на основе email и пароля
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Пользователь авторизован
+        '400':
+          description: Неправильно составлен запрос или нверные данные.
+        '404':
+          description: Пользователь с такими данными не найден.
+        '5XX':
+          description: Ошибка сервера.
+    get:
+      tags:
+        - user
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизированному пользователю
+      responses:
+        '200':
+          description: Пользователь аутентифицирован
+        '401':
+          description: Пользователь не аутентифицирован.
+        '5XX':
+          description: Ошибка сервера.
+
+  /users/{userId}/avatar:
+    patch:
+      tags:
+        - user
+      summary: Загрузить изображение аватара
+      description: Загружает изображение аватара пользователя. Изображение аватара должно быть в формате png или jpg
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Аватар успешно загужен
+        '400':
+          description: Неверный запрос или данные.
+        '401':
+          description: Требуется аутентификация.
+        '404':
+          description: Польователь не найден.
+        '5XX':
+          description: Ошибка сервера.
+
+  /user/favorites/{offerId}:
+    post:
+      tags:
+        - user
+      summary: Добавить оффер в избранное
+      description: Добавляет оффер в избранное
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Предложение добавлено в избранное
+        '400':
+          description: Неверно задан запрос.
+        '401':
+          description: Требуется аутентификация.
+        '404':
+          description: Предложение не найдено.
+        '5XX':
+          description: Ошибка сервера.
+
+    delete:
+      tags:
+        - user
+      summary: Убрать оффер из избранного
+      description: Убирает оффер из избранного
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Предложение удалено
+        '400':
+          description: Неверно задан запрос
+        '401':
+          description: Требуется аутентификация.
+        '404':
+          description: Предложение не найдено.
+        '5XX':
+          description: Ошибка сервера.
+
+  /offer:
+    get:
+      tags:
+        - offer
+      summary: Загрузить предложения
+      description: Загружает предложения
+      responses:
+        '200':
+          description: Список предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offerShort'
+        '5XX':
+          description: Ошибка сервера.
+
+    post:
+      tags:
+        - offer
+      summary: Создать предлжение
+      description: Создание предложения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+      responses:
+        '201':
+          description: Прдложение созданно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerDetailed'
+
+        '400':
+          description: Неверно заполнены данные.
+        '401':
+          description: Требуется Аутентификация.
+        '5XX':
+          description: Ошибка сервера.
+
+  /offer/{id}:
+    get:
+      tags:
+        - offer
+      summary: Загрузить предложение
+      description: Загружает выбранное предлжение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Идентификатор предложения
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerDetailed'
+        '400':
+          description: Неверно составлен запрос.
+        '404':
+          description: Предложение не найдено.
+        '5XX':
+          description: Ошибка сервера.
+
+    patch:
+      tags:
+        - offer
+      summary: Обновить предлжение
+      description: Вносит изменения в выбранное предложение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Идентификатор предложения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerDetailed'
+        '400':
+          description: Неверно составлен запрос или заполнены данные.
+        '401':
+          description: Требуется аутентификация
+        '403':
+          description: Недостаточно прав для редактирования предложения
+        '404':
+          description: Предложение не найдено.
+        '5XX':
+          description: Ошибка сервера.
+
+    delete:
+      tags:
+        - offer
+      summary: Удалить выбранное предложение
+      description: Удаляет выбранное предложение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Идентификатор предложения
+      responses:
+        '204':
+          description: Предложение успешно удалено
+        '400':
+          description: Неверно составлен запрос.
+        '401':
+          description: Требуется аутентификация.
+        '404':
+          description: Предложение не найдено.
+        '5XX':
+          description: Ошибка сервера.
+
+  /offer/premium:
+    get:
+      tags:
+        - offer
+      summary: Загрузить премиум предложения для города
+      description: Загружает премиумные предложения для города
+      parameters:
+        - name: city
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offerShort'
+        '400':
+          description: Неверно составлен запрос.
+        '404':
+          description: Предложения не найдены.
+        '5XX':
+          description: Ошибка сервера.
+
+
+  /offer/favorites:
+    get:
+      tags:
+        - offer
+      summary:  Загрузить избранные предложения
+      description: Загружает избранные предложения
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offerShort'
+        '400':
+          description: Неверно составлен запрос.
+        '401':
+          description: Требуется аутентификация
+        '404':
+          description: Предложения не найдены.
+        '5XX':
+          description: Ошибка сервера.
+
+  /comment/{offerId}:
+    get:
+      tags:
+        - comment
+      summary: Загрузить комментарии
+      description: Загружает комментарии для выбранного предложения
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        '400':
+          description: Неправильно составлен запрос.
+        '404':
+          description: Коментарии не найдены.
+        '5XX':
+          description: Ошибка сервера.
+
+    post:
+      tags:
+        - comment
+      summary: Создать комментарий
+      description: Создать комментарий для выбранного предложения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createComment'
+      responses:
+        '201':
+          description: Комментарий создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+        '400':
+          description: Неверно составлен запрос или невалидные данные.
+        '401':
+          description: Требуется аутентификация.
+        '404':
+          description: Неудалось создать комментарий.
+        '5XX':
+          description: Ошибка сервера.
+
+components:
+  schemas:
+    createUser:
+      type: object
+
+      properties:
+        name:
+          required: true
+          type: string
+          example: John
+        email:
+          required: true
+          type: string
+          example: example@mail.com
+        avatar:
+          required: false
+          type: string
+          example: avatar.jpg
+        password:
+          required: true
+          type: string
+          example: somePass2112
+        type:
+          required: true
+          type: string
+          example: pro
+
+    createOffer:
+      type: object
+
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+        city:
+          type: string
+        previewImage:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+        type:
+          type: string
+        bedrooms:
+          type: number
+        maxAdults:
+          type: number
+        price:
+          type: number
+        goods:
+          type: array
+          items:
+            type: string
+        authorId:
+          type: string
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: string
+
+    createComment:
+      type: object
+
+      properties:
+        content:
+          type: string
+        date:
+          type: string
+        rating:
+          type: number
+        authorId:
+          type: string
+
+    user:
+      type: object
+
+      properties:
+        id:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+        name:
+          type: string
+          example: John
+        email:
+          type: string
+          example: example@mail.com
+        avatar:
+          type: string
+          example: avatar.jpg
+        userType:
+          type: string
+          example: regular
+
+    offerDetailed:
+      type: object
+
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+        city:
+          type: string
+        previewImage:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+        type:
+          type: string
+        bedrooms:
+          type: number
+        maxAdults:
+          type: number
+        price:
+          type: number
+        goods:
+          type: array
+          items:
+            type: string
+        authorId:
+          type: string
+        commentsCount:
+          type: number
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: string
+
+    offerShort:
+      type: object
+
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+        city:
+          type: string
+        previewImage:
+          type: string
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+        type:
+          type: string
+        price:
+          type: number
+        authorId:
+          type: string
+        commentsCount:
+          type: number
+
+
+    comment:
+      type: object
+
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        date:
+          type: string
+        rating:
+          type: number
+        author:
+          type: string
