@@ -5,6 +5,7 @@ import {Component} from '../shared/types/index.js';
 import {DatabaseClient} from '../shared/libs/database-client/index.js';
 import {getMongoURI} from '../shared/helpers/index.js';
 
+
 @injectable()
 class Application {
   constructor(

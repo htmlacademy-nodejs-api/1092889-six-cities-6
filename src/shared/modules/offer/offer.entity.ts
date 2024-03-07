@@ -1,6 +1,5 @@
 import {defaultClasses, getModelForClass, modelOptions, prop} from '@typegoose/typegoose';
-import {Goods, ImageExtType, Location, Offer, OfferType, User, City} from '../../types/index.js';
-import {UserEntity} from '../user/index.js';
+import {Goods, ImageExtType, Location, OfferType, City} from '../../types/index.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {}
@@ -13,7 +12,7 @@ export interface OfferEntity extends defaultClasses.Base {}
 })
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
+export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({required: true, type: String, trim: 'true'})
   public title: string;
@@ -36,7 +35,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
   @prop({required:true, type: Boolean})
   public isPremium: boolean;
 
-  @prop({required:true, type: Boolean})
+  @prop({required:true, default: false, type: Boolean})
   public isFavorite: boolean;
 
   @prop({required:true, type: Number})
@@ -57,15 +56,14 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
   @prop({required:true, type: String})
   public goods: Goods[];
 
-  @prop({required:true,ref: UserEntity})
-  public author: Omit<User, 'password'>;
+  @prop({required:true, type: String})
+  public authorId: string;
 
   @prop({required:true, default: 0, type: Number})
-  public comments: number;
+  public commentCount: number;
 
   @prop({set: (value: Location) => JSON.stringify(value), get: (value: string) => JSON.parse(value) ,default: '', type: String})
   public location: Location;
-
 }
 
 export const OfferModel = getModelForClass(OfferEntity);
