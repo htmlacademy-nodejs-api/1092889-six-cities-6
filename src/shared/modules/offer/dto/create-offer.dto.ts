@@ -15,8 +15,8 @@ class CreateOfferDto {
   public maxAdults: number;
   public price: number;
   public goods: Goods[];
-  public author: Omit<User, 'password'>;
-  public comments: number;
+  public authorId: Omit<User, 'password'>;
+  public commentCount: number;
   public location: Location;
 }
 

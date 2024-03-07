@@ -1,10 +1,13 @@
 import {inject, injectable} from 'inversify';
 import {OfferService} from './offer-service.interface.js';
-import {Component} from '../../types/index.js';
+import {City, Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
-import {DocumentType, types} from '@typegoose/typegoose';
+import {DocumentType, mongoose, types} from '@typegoose/typegoose';
 import {OfferEntity} from './offer.entity.js';
 import {CreateOfferDto} from './dto/create-offer.dto.js';
+import {UpdateOfferDto} from './dto/update-offer.dto.js';
+import {SortType} from '../../helpers/index.js';
+import {OfferCount} from './offer.constant.js';
 
 @injectable()
 class DefaultOfferService implements OfferService {
@@ -20,9 +23,124 @@ class DefaultOfferService implements OfferService {
     return result;
   }
 
+
+  public async find(): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find().populate(['authorId']).exec();
+  }
+
   public async findById(id: string): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel.findById(id).exec();
   }
+
+  public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
+    return this.offerModel.findByIdAndDelete(offerId).exec();
+  }
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.offerModel.exists({_id: documentId}) !== null);
+  }
+
+  public async findPremiumByCity(city: City): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel
+      .find({city: city}, {} , {limit: OfferCount.PREMIUM})
+      .sort({date: SortType.DOWN})
+      .populate(['authorId'])
+      .exec();
+  }
+
+  public async incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {
+    return this.offerModel.findByIdAndUpdate(offerId, {$inc: {commentCount: 1}}).exec();
+  }
+
+  public async updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
+    return this.offerModel
+      .findByIdAndUpdate(offerId, dto, {new: true})
+      .populate(['authorId'])
+      .exec();
+  }
+
+  public async findFavorites(authorId: string): Promise<DocumentType<OfferEntity>[]>{
+    return this.offerModel.aggregate([
+      {$match: {isFavorite: true}},
+      {$addFields:{isFavorite: false}},
+      {
+        $lookup: {
+          from: 'users',
+          let: {id: '$_id'},
+          pipeline:[
+            {$match: {_id: new mongoose.Types.ObjectId(authorId)}},
+            {$addFields: {
+              check: {$in: [{$toString: '$$id'}, '$favorites']}
+            },
+            },
+            {$project: {_id: 1, name: 1, avatar: 1, type: 1, check: 1}}],
+          as: 'favorites'
+        }},
+      {
+        $addFields:
+            {isFavorite: {$arrayElemAt: ['$favorites.check', 0]}}
+      },
+      {
+        $addFields:
+          {author: '$favorites'}
+      },
+      {$match: {isFavorite: true}},
+      {$unset: 'favorites'},
+      {$unset: 'author.check'}
+    ]).exec();
+  }
+
+  public async updateCommentsCount(offerId: string): Promise<DocumentType<Pick<OfferEntity, 'commentCount'>>> {
+    const result = await this.offerModel.aggregate([
+      {$match: {_id: new mongoose.Types.ObjectId(offerId)}},
+      {
+        $lookup: {
+          from: 'comments',
+          let: {id: offerId},
+          pipeline: [
+            {$match: {$match: { $expr: { $in: ['$$id', '$offerId']}}}},
+            {$project: {_id: 1}}],
+          as: 'comments'
+        }},
+      {
+        $addFields:
+        {commentsCount: {$size: ['$comments']}}
+      },
+      {$unset: 'comments'},
+      {$project: {commentsCount: 1}}
+    ]).exec();
+    if(result.length!) {
+      throw new Error('Not valid commentCount');
+    }
+    return result[0];
+  }
+
+  public async updateRating(offerId: string): Promise<DocumentType<Pick<OfferEntity, 'rating'>>> {
+    const result = await this.offerModel.aggregate([
+      {$match: {_id: new mongoose.Types.ObjectId(offerId)}},
+      {
+        $lookup: {
+          from: 'comments',
+          let: {id: offerId},
+          pipeline: [
+            {$match: {$match: { $expr: { $in: ['$$id', '$offerId']}}}},
+            {$project: {rating: 1}}],
+          as: 'comments'
+        }},
+      {
+        $addFields:
+        {commentsCount: {$avg: ['$comments.rating', '$commentsCount']}}
+      },
+      {$unset: 'comments'},
+      {$project: {rating: 1}}
+    ]).exec();
+    if(result.length!) {
+      throw new Error('Not valid rating');
+    }
+    return result[0];
+  }
 }
 
+
 export {DefaultOfferService};
+

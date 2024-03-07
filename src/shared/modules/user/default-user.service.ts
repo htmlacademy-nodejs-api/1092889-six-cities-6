@@ -5,6 +5,7 @@ import {Component} from '../../types/index.js';
 import {UserEntity} from './user.entity.js';
 import {inject, injectable} from 'inversify';
 import {Logger} from '../../libs/logger/index.js';
+import {UpdateUserDto} from './dto/update-user.dto.js';
 
 @injectable()
 class DefaultUserService implements UserService {
@@ -41,6 +42,11 @@ class DefaultUserService implements UserService {
 
     return this.create(dto, salt);
   }
+
+  updateById(id: string, dto: UpdateUserDto): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(id, dto, {new: true}).exec();
+  }
+
 }
 
 export {DefaultUserService};

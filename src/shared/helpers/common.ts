@@ -1,3 +1,8 @@
+const enum SortType {
+  DOWN = -1,
+  UP = 1
+}
+
 const MEDIAN = 0.5;
 
 const generateRandomValue = (min: number, max: number, precision = 0) => Number(((Math.random() * (max - min)) + min).toFixed(precision));
@@ -19,6 +24,7 @@ export {
   generateRandomValue,
   getRandomItems,
   getRandomItem,
-  getErrorMessage
+  getErrorMessage,
+  SortType
 };
 
