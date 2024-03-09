@@ -10,7 +10,7 @@ import {Config, RestSchema} from '../../libs/config/index.js';
 import {UserRdo} from './rdo/user.rdo.js';
 import {CreateUserRequest} from './types/create-user-request.js';
 import {LoginUserRequest} from './types/login-user-request.js';
-import {FavoriteUserRequest} from "./types/favorite-user-request.js";
+import {FavoriteUserRequest} from './types/favorite-user-request.js';
 
 @injectable()
 class UserController extends BaseController {
