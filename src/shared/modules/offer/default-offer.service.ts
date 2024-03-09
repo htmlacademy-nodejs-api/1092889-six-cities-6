@@ -1,5 +1,5 @@
 import {inject, injectable} from 'inversify';
-import {OfferService} from './offer-service.interface.js';
+import {OfferService} from './types/offer-service.interface.js';
 import {City, Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {DocumentType, mongoose, types} from '@typegoose/typegoose';

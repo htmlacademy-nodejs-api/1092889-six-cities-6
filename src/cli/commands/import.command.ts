@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import {Command} from './command.interface.js';
 import {TSVFileReader} from '../../shared/libs/file-reader/index.js';
 import {getErrorMessage, createOffer, getMongoURI} from '../../shared/helpers/index.js';
-import {UserService} from '../../shared/modules/user/user-service.interface.js';
+import {UserService} from '../../shared/modules/user/types/user-service.interface.js';
 import {DefaultOfferService, OfferModel, OfferService} from '../../shared/modules/offer/index.js';
 import {DatabaseClient, MongoDatabaseClient} from '../../shared/libs/database-client/index.js';
 import {ConsoleLogger, Logger} from '../../shared/libs/logger/index.js';

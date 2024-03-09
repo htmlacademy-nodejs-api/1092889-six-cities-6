@@ -15,7 +15,7 @@ tags:
   - name: comments
     description: действия с комментариями
 paths:
-  /users/register:
+  /user/register:
     post:
       tags:
         - user
@@ -38,7 +38,7 @@ paths:
                 $ref: '#/components/schemas/user'
         "409":
           description: Пользователь с таким email уже зарегестрирован
-  /users/login:
+  /user/login:
     post:
       tags:
         - user
@@ -77,7 +77,7 @@ paths:
         '5XX':
           description: Ошибка сервера.
 
-  /users/{userId}/avatar:
+  /user/{userId}/avatar:
     patch:
       tags:
         - user
@@ -489,7 +489,7 @@ components:
         avatar:
           type: string
           example: avatar.jpg
-        userType:
+        type:
           type: string
           example: regular
 
