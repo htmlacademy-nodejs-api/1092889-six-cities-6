@@ -1,4 +1,4 @@
-import {UserService} from './user-service.interface.js';
+import {UserService} from './types/user-service.interface.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {DocumentType, types} from '@typegoose/typegoose';
 import {Component} from '../../types/index.js';

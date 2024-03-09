@@ -1,9 +1,16 @@
+import {ClassConstructor, plainToInstance} from 'class-transformer';
+
 const enum SortType {
   DOWN = -1,
   UP = 1
 }
 
 const MEDIAN = 0.5;
+
+
+const fillDTO = <T, V>(someDto: ClassConstructor<T>, plainObject: V) => plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
+
+const createErrorObject = (message: string) => ({error: message});
 
 const generateRandomValue = (min: number, max: number, precision = 0) => Number(((Math.random() * (max - min)) + min).toFixed(precision));
 
@@ -25,6 +32,8 @@ export {
   getRandomItems,
   getRandomItem,
   getErrorMessage,
+  fillDTO,
+  createErrorObject,
   SortType
 };
 
