@@ -2,13 +2,13 @@ import {inject, injectable} from 'inversify';
 import {
   BaseController,
   HttpError,
-  HttpMethod,
+  HttpMethod, UploadFileMiddleware,
   ValidateDtoMiddleware,
   ValidateObjectIdMiddleware
 } from '../../libs/rest/index.js';
 import {Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
-import {NextFunction, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import {UserService} from './types/user-service.interface.js';
 import {StatusCodes} from 'http-status-codes';
 import {fillDTO} from '../../helpers/index.js';
@@ -54,6 +54,15 @@ class UserController extends BaseController {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
     });
+    this.addRoute({
+      path: '/:userId/avatar',
+      method: HttpMethod.PATCH,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')
+      ]
+    });
   }
 
   public async create({body}: CreateUserRequest, res: Response, _next: NextFunction): Promise<void> {
@@ -81,6 +90,10 @@ class UserController extends BaseController {
     }
 
     throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'not implemented', 'UserController');
+  }
+
+  public async uploadAvatar(req: Request, res: Response): Promise<void> {
+    this.created(res, {filepath: req?.file?.path});
   }
 
   public async authorize(_req: LoginUserRequest, _res: Response): Promise<void> {
