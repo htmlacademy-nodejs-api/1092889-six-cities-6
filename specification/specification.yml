@@ -56,7 +56,7 @@ paths:
                 password:
                   type: string
       responses:
-        '200':
+        '201':
           description: Пользователь авторизован
         '400':
           description: Неправильно составлен запрос или нверные данные.
@@ -78,7 +78,7 @@ paths:
           description: Ошибка сервера.
 
   /user/{userId}/avatar:
-    patch:
+    post:
       tags:
         - user
       summary: Загрузить изображение аватара
