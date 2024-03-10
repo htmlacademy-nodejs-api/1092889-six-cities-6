@@ -61,6 +61,7 @@
     "express-async-handler": "1.2.0",
     "got": "14.2.0",
     "inversify": "6.0.2",
+    "jose": "5.2.3",
     "mime-types": "2.1.35",
     "mongoose": "8.2.0",
     "multer": "1.4.5-lts.1",

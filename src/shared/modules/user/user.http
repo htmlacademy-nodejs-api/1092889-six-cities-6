@@ -30,3 +30,7 @@ Content-Type: image/jpeg
 
 < test-image-request/avatar.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+###
+##Check auth
+GET http://localhost:4000/user/login HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1ZWI4NzEyYTIyZjMxODM2NWVjNmQ0NSIsIm5hbWUiOiJKb2huIiwiZW1haWwiOiJleGFtcGxlQG1haWwuY29tIiwidHlwZSI6InJlZ3VsYXIiLCJpYXQiOjE3MTAwNzc3MTYsImV4cCI6MTcxMDI1MDUxNn0.143NCz7OxU9m6cobo8Qq4U1JQtDjfdL0NIu5X07pq1g

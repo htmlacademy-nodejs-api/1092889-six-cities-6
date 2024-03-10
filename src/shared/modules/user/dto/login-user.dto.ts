@@ -6,7 +6,6 @@ class LoginUserDto {
   public email: string;
 
   @Length(6,12,{message: loginUserValidationMessages.password.length})
-
   public password: string;
 }
 

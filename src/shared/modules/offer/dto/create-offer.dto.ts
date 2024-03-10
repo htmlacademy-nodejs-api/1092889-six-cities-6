@@ -4,7 +4,6 @@ import {
   IsBoolean,
   IsDateString,
   IsIn,
-  IsMongoId,
   IsString,
   Length,
   Max,
@@ -63,7 +62,6 @@ class CreateOfferDto {
   @ArrayMinSize(1, {message: createOfferValidationMessage.goods.empty })
   public goods: Goods[];
 
-  @IsMongoId({message: createOfferValidationMessage.authorId.invalidObjectId })
   public authorId: string;
 
   public commentCount: number;
