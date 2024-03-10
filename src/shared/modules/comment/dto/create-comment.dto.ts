@@ -1,4 +1,4 @@
-import {IsMongoId, Length, Max, Min} from 'class-validator';
+import {Length, Max, Min} from 'class-validator';
 import {createCommentValidationMessage} from './create-comment.message.js';
 
 class CreateCommentDto {
@@ -10,8 +10,7 @@ class CreateCommentDto {
   @Max(1024, {message: createCommentValidationMessage.rating.max})
     rating: number;
 
-  @IsMongoId({message: createCommentValidationMessage.authorId.invalidFormat})
-    authorId: string;
+  authorId: string;
 
   offerId: string;
 }

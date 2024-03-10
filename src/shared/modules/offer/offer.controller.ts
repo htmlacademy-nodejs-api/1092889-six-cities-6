@@ -1,5 +1,11 @@
 import {inject, injectable} from 'inversify';
-import {BaseController, HttpError, HttpMethod, ValidateObjectIdMiddleware} from '../../libs/rest/index.js';
+import {
+  BaseController,
+  HttpError,
+  HttpMethod,
+  PrivateRouteMiddleware,
+  ValidateObjectIdMiddleware
+} from '../../libs/rest/index.js';
 import {City, Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {Request, Response} from 'express';
@@ -27,9 +33,11 @@ class OfferController extends BaseController {
     this.logger.info('Register routes for OfferController...');
 
     this.addRoute({path: '/', method: HttpMethod.GET, handler: this.index});
-    this.addRoute({path: '/', method: HttpMethod.POST, handler: this.create, middlewares:[new ValidateDtoMiddleware(CreateOfferDto)]});
+    this.addRoute({path: '/', method: HttpMethod.POST, handler: this.create, middlewares:[
+      new PrivateRouteMiddleware(),
+      new ValidateDtoMiddleware(CreateOfferDto)]});
     this.addRoute({path: '/premium', method: HttpMethod.GET, handler: this.getPremium});
-    this.addRoute({path: '/favorites', method: HttpMethod.GET, handler: this.getFavorites});
+    this.addRoute({path: '/favorites', method: HttpMethod.GET, handler: this.getFavorites, middlewares: [new PrivateRouteMiddleware()]});
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.GET,
@@ -44,6 +52,7 @@ class OfferController extends BaseController {
       method: HttpMethod.PATCH,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
@@ -54,6 +63,7 @@ class OfferController extends BaseController {
       method: HttpMethod.DELETE,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
@@ -65,8 +75,8 @@ class OfferController extends BaseController {
     this.ok(res, fillDTO(OfferShortRdo, offers));
   }
 
-  public async create({body}: CreateOfferRequest, res: Response): Promise<void> {
-    const result = await this.offerService.create(body);
+  public async create({body, tokenPayload}: CreateOfferRequest, res: Response): Promise<void> {
+    const result = await this.offerService.create({...body, authorId: tokenPayload.id});
     const offer = await this.offerService.findById(result.id);
 
     this.created(res, fillDTO(OfferDetailedRdo, offer));
@@ -79,15 +89,26 @@ class OfferController extends BaseController {
     this.ok(res, fillDTO(OfferDetailedRdo, offer));
   }
 
-  public async update({params, body}: UpdateOfferRequest, res: Response): Promise<void> {
+  public async update({params, body, tokenPayload}: UpdateOfferRequest, res: Response): Promise<void> {
     const {offerId} = params;
+    const existingOffer = await this.offerService.findById(offerId);
+
+    if(!existingOffer!.authorId === tokenPayload.id) {
+      new HttpError(StatusCodes.FORBIDDEN, 'Permissions required', 'OfferController');
+    }
     const offer = await this.offerService.updateById(offerId,body);
 
     this.ok(res, fillDTO(OfferDetailedRdo, offer));
   }
 
-  public async delete({params}: Request<ParamOfferId>, res: Response): Promise<void> {
+  public async delete({params, tokenPayload}: Request<ParamOfferId>, res: Response): Promise<void> {
     const {offerId} = params;
+    const existingOffer = await this.offerService.findById(offerId);
+
+    if(!existingOffer!.authorId === tokenPayload.id) {
+      new HttpError(StatusCodes.FORBIDDEN, 'Permissions required', 'OfferController');
+    }
+
     const offer = await this.offerService.deleteById(offerId);
     this.noContent(res, offer);
   }
@@ -101,8 +122,10 @@ class OfferController extends BaseController {
     this.ok(res, fillDTO(OfferShortRdo, offers));
   }
 
-  public async getFavorites(_req: Request, _res: Response): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'not implemented', 'OfferController');
+  public async getFavorites({tokenPayload}: Request, res: Response): Promise<void> {
+    const result = this.offerService.findFavorites(tokenPayload.id);
+
+    this.ok(res, fillDTO(OfferShortRdo, result));
   }
 
 }

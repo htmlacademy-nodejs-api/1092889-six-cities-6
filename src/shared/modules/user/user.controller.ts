@@ -2,7 +2,7 @@ import {inject, injectable} from 'inversify';
 import {
   BaseController,
   HttpError,
-  HttpMethod, UploadFileMiddleware,
+  HttpMethod, PrivateRouteMiddleware, UploadFileMiddleware,
   ValidateDtoMiddleware,
   ValidateObjectIdMiddleware
 } from '../../libs/rest/index.js';
@@ -21,6 +21,8 @@ import {CreateUserDto} from './dto/create-user.dto.js';
 import {LoginUserDto} from './dto/login-user.dto.js';
 import {DocumentExistsMiddleware} from '../../libs/rest/middleware/document-exists.middleware.js';
 import {OfferService} from '../offer/index.js';
+import {AuthService} from '../auth/index.js';
+import {LoggedUserRdo} from './rdo/logged-user.rdo.js';
 
 @injectable()
 class UserController extends BaseController {
@@ -28,19 +30,21 @@ class UserController extends BaseController {
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
     @inject(Component.Config) private readonly config: Config<RestSchema>,
-    @inject(Component.OfferService) private readonly offerService: OfferService) {
+    @inject(Component.OfferService) private readonly offerService: OfferService,
+    @inject(Component.AuthService) private readonly authService: AuthService) {
     super(logger);
 
     this.logger.info('Register routes for UserController...');
 
     this.addRoute({path: '/register', method: HttpMethod.POST, handler: this.create, middlewares: [new ValidateDtoMiddleware(CreateUserDto)]});
     this.addRoute({path: '/login', method: HttpMethod.POST, handler: this.login, middlewares: [new ValidateDtoMiddleware(LoginUserDto)]});
-    this.addRoute({path: '/login', method: HttpMethod.GET, handler: this.authorize});
+    this.addRoute({path: '/login', method: HttpMethod.GET, handler: this.checkAuth});
     this.addRoute({
       path: '/favorites/:offerId',
       method: HttpMethod.POST,
       handler: this.addFavorite,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
@@ -50,6 +54,7 @@ class UserController extends BaseController {
       method: HttpMethod.DELETE,
       handler: this.deleteFavorite,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
@@ -79,35 +84,52 @@ class UserController extends BaseController {
     this.created(res, fillDTO(UserRdo, result));
   }
 
-  public async login({body}: LoginUserRequest, _res: Response): Promise<void>{
-    const existUser = await this.userService.findByEmail(body.email);
+  public async login({body}: LoginUserRequest, res: Response): Promise<void>{
+    const user = await this.authService.verify(body);
 
-    if (!existUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with email: ${body.email} not found`,
-        'UserController');
-    }
+    const token = await this.authService.authenticate(user);
 
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'not implemented', 'UserController');
+    const responseData = fillDTO(LoggedUserRdo, {email: user.email, token: token});
+
+    this.ok(res, responseData);
   }
 
   public async uploadAvatar(req: Request, res: Response): Promise<void> {
     this.created(res, {filepath: req?.file?.path});
   }
 
-  public async authorize(_req: LoginUserRequest, _res: Response): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'not implemented', 'UserController');
+  public async checkAuth({tokenPayload}: LoginUserRequest, res: Response): Promise<void> {
+    const foundUser = await this.userService.findById(tokenPayload.id);
 
+    if(!foundUser){
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Unauthorized',
+        'UserController'
+      );
+    }
+    this.ok(res, fillDTO(UserRdo, foundUser));
   }
 
-  public async addFavorite(_req: FavoriteUserRequest, _res: Response): Promise<void>{
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'not implemented', 'UserController');
-
+  public async addFavorite({params, tokenPayload}: FavoriteUserRequest, res: Response): Promise<void>{
+    const {offerId} = params;
+    const user = await this.userService.findById(tokenPayload.id);
+    if(offerId in user!.favorites) {
+      this.created(res, fillDTO(UserRdo, user));
+    }
+    const updatedUser = await this.userService.updateById(tokenPayload.id, {favorites: [...user!.favorites, offerId]});
+    this.created(res, fillDTO(UserRdo, updatedUser));
   }
 
-  public async deleteFavorite(_req: FavoriteUserRequest, _res: Response): Promise<void>{
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'not implemented', 'UserController');
+  public async deleteFavorite({params, tokenPayload}: FavoriteUserRequest, res: Response): Promise<void>{
+    const {offerId} = params;
+    const user = await this.userService.findById(tokenPayload.id);
+    if(offerId in user!.favorites) {
+      const updatedUser = await this.userService.updateById(tokenPayload.id, {favorites: [...user!.favorites.filter((id) => id !== offerId)]});
+      this.noContent(res, fillDTO(UserRdo, updatedUser));
+    }
+
+    this.noContent(res, fillDTO(UserRdo, user));
   }
 }
 export {UserController};
