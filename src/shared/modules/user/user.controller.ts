@@ -1,5 +1,11 @@
 import {inject, injectable} from 'inversify';
-import {BaseController, HttpError, HttpMethod} from '../../libs/rest/index.js';
+import {
+  BaseController,
+  HttpError,
+  HttpMethod,
+  ValidateDtoMiddleware,
+  ValidateObjectIdMiddleware
+} from '../../libs/rest/index.js';
 import {Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {NextFunction, Response} from 'express';
@@ -11,22 +17,43 @@ import {UserRdo} from './rdo/user.rdo.js';
 import {CreateUserRequest} from './types/create-user-request.js';
 import {LoginUserRequest} from './types/login-user-request.js';
 import {FavoriteUserRequest} from './types/favorite-user-request.js';
+import {CreateUserDto} from './dto/create-user.dto.js';
+import {LoginUserDto} from './dto/login-user.dto.js';
+import {DocumentExistsMiddleware} from '../../libs/rest/middleware/document-exists.middleware.js';
+import {OfferService} from '../offer/index.js';
 
 @injectable()
 class UserController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
-    @inject(Component.Config) private readonly config: Config<RestSchema>) {
+    @inject(Component.Config) private readonly config: Config<RestSchema>,
+    @inject(Component.OfferService) private readonly offerService: OfferService) {
     super(logger);
 
     this.logger.info('Register routes for UserController...');
 
-    this.addRoute({path: '/register', method: HttpMethod.POST, handler: this.create});
-    this.addRoute({path: '/login', method: HttpMethod.POST, handler: this.login});
+    this.addRoute({path: '/register', method: HttpMethod.POST, handler: this.create, middlewares: [new ValidateDtoMiddleware(CreateUserDto)]});
+    this.addRoute({path: '/login', method: HttpMethod.POST, handler: this.login, middlewares: [new ValidateDtoMiddleware(LoginUserDto)]});
     this.addRoute({path: '/login', method: HttpMethod.GET, handler: this.authorize});
-    this.addRoute({path: '/favorites/:offerId', method: HttpMethod.POST, handler: this.addFavorite});
-    this.addRoute({path: '/favorites/:offerId', method: HttpMethod.DELETE, handler: this.deleteFavorite});
+    this.addRoute({
+      path: '/favorites/:offerId',
+      method: HttpMethod.POST,
+      handler: this.addFavorite,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+      ]
+    });
+    this.addRoute({
+      path: '/favorites/:offerId',
+      method: HttpMethod.DELETE,
+      handler: this.deleteFavorite,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+      ]
+    });
   }
 
   public async create({body}: CreateUserRequest, res: Response, _next: NextFunction): Promise<void> {

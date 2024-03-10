@@ -1,4 +1,4 @@
-import {defaultClasses, getModelForClass, modelOptions, prop} from '@typegoose/typegoose';
+import {defaultClasses, modelOptions, prop} from '@typegoose/typegoose';
 import {UserEntity} from '../user/index.js';
 import {OfferEntity} from '../offer/index.js';
 
@@ -17,9 +17,6 @@ export class CommentEntity extends defaultClasses.TimeStamps {
   @prop({required: true, trim: true , type: String})
     content: string;
 
-  @prop({required: true, type: String})
-    date: Date;
-
   @prop({required: true, type: Number})
     rating: number;
 
@@ -31,4 +28,3 @@ export class CommentEntity extends defaultClasses.TimeStamps {
 
 }
 
-export const CommentModel = getModelForClass(CommentEntity);

@@ -3,9 +3,10 @@ import {UserService} from './types/user-service.interface.js';
 import {Component} from '../../types/index.js';
 import {DefaultUserService} from './default-user.service.js';
 import {types} from '@typegoose/typegoose';
-import {UserEntity, UserModel} from './user.entity.js';
+import {UserEntity} from './user.entity.js';
 import {Controller} from '../../libs/rest/index.js';
 import {UserController} from './user.controller.js';
+import {UserModel} from '../models-init.js';
 
 const createUserContainer = () => {
   const userContainer = new Container();

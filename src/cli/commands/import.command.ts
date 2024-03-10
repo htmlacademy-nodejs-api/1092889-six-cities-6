@@ -3,18 +3,21 @@ import {Command} from './command.interface.js';
 import {TSVFileReader} from '../../shared/libs/file-reader/index.js';
 import {getErrorMessage, createOffer, getMongoURI} from '../../shared/helpers/index.js';
 import {UserService} from '../../shared/modules/user/types/user-service.interface.js';
-import {DefaultOfferService, OfferModel, OfferService} from '../../shared/modules/offer/index.js';
+import {DefaultOfferService, OfferService} from '../../shared/modules/offer/index.js';
 import {DatabaseClient, MongoDatabaseClient} from '../../shared/libs/database-client/index.js';
 import {ConsoleLogger, Logger} from '../../shared/libs/logger/index.js';
-import {DefaultUserService, UserModel} from '../../shared/modules/user/index.js';
+import {DefaultUserService, } from '../../shared/modules/user/index.js';
 import {Offer} from '../../shared/types/index.js';
 import {DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD} from './command.constant.js';
+import {CommentModel, OfferModel, UserModel} from '../../shared/modules/models-init.js';
+import {CommentService, DefaultCommentService} from '../../shared/modules/comment/index.js';
 
 class ImportCommand implements Command {
-  private userService: UserService;
-  private offerService: OfferService;
-  private databaseClient: DatabaseClient;
-  private logger: Logger;
+  private readonly userService: UserService;
+  private readonly offerService: OfferService;
+  private readonly commentService: CommentService;
+  private readonly databaseClient: DatabaseClient;
+  private readonly logger: Logger;
   private salt: string;
 
   constructor() {
@@ -23,7 +26,8 @@ class ImportCommand implements Command {
 
     this.logger = new ConsoleLogger();
     this.userService = new DefaultUserService(this.logger, UserModel);
-    this.offerService = new DefaultOfferService(this.logger, OfferModel);
+    this.commentService = new DefaultCommentService(this.logger, CommentModel);
+    this.offerService = new DefaultOfferService(this.logger, OfferModel, this.commentService);
     this.databaseClient = new MongoDatabaseClient(this.logger);
   }
 
@@ -49,7 +53,7 @@ class ImportCommand implements Command {
     }, this.salt);
 
     await this.offerService.create({
-      ...offer, author:user.id, location: offer.location
+      ...offer, authorId: user.id, location: offer.location, commentCount: offer.comments
     });
   }
 

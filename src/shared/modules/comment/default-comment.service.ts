@@ -5,6 +5,8 @@ import {Logger} from '../../libs/logger/index.js';
 import {DocumentType, types} from '@typegoose/typegoose';
 import {CommentEntity} from './comment.entity.js';
 import {CreateCommentDto} from './dto/create-comment.dto.js';
+import {DEFAULT_OFFERS_COUNT} from './comment.constants.js';
+import {SortType} from '../../helpers/index.js';
 
 @injectable()
 class DefaultCommentService implements CommentService {
@@ -21,7 +23,7 @@ class DefaultCommentService implements CommentService {
   }
 
   public async findByOfferId(id: string): Promise<DocumentType<CommentEntity>[]> {
-    return this.commentModel.find({offerId: id}).populate('authorId').exec();
+    return this.commentModel.find({offerId: id}).populate('authorId').limit(DEFAULT_OFFERS_COUNT).sort({createdAT: SortType.DOWN}).exec();
   }
 
   public async deleteByOfferId(id: string): Promise<number> {

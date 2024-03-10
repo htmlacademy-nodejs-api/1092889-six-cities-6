@@ -1,5 +1,6 @@
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
 import {Goods, ImageExtType, Location} from '../../../types/index.js';
+import {UserRdo} from '../../user/index.js';
 
 class OfferDetailedRdo {
   @Expose()
@@ -48,10 +49,11 @@ class OfferDetailedRdo {
   public goods: Goods[];
 
   @Expose()
-  public authorId:string;
+  @Type(() => UserRdo)
+  public authorId: UserRdo;
 
   @Expose()
-  public commentsCount:number;
+  public commentCount:number;
 
   @Expose()
   public location: Location;

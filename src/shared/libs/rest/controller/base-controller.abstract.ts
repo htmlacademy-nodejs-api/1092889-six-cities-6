@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import {Controller} from './controller.interface.js';
 import {Response, Router} from 'express';
 import {Logger} from '../../logger/index.js';
-import {Route} from '../types/router.interface.js';
+import {Route} from '../types/route.interface.js';
 import {StatusCodes} from 'http-status-codes';
 
 const DEFAULT_CONTENT_TYPE = 'application/json';
@@ -23,7 +23,11 @@ abstract class BaseController implements Controller {
 
   public addRoute(route: Route) {
     const wrapperAsyncHandler = asyncHandler(route.handler.bind(this));
-    this.router[route.method](route.path, wrapperAsyncHandler);
+    const middlewareHandlers = route.middlewares?.map(
+      (item) => asyncHandler(item.execute.bind(item))
+    );
+    const allHandlers = middlewareHandlers ? [...middlewareHandlers, wrapperAsyncHandler] : wrapperAsyncHandler;
+    this.router[route.method](route.path, allHandlers);
     this.logger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }
 

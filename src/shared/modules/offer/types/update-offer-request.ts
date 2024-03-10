@@ -1,8 +1,8 @@
 import {Request} from 'express';
-import {RequestParams} from '../../../libs/rest/types/request.params.type.js';
-import {RequestBody} from '../../../libs/rest/types/request-body.type.js';
+import {RequestBody} from '../../../libs/rest/index.js';
 import {UpdateOfferDto} from '../dto/update-offer.dto.js';
+import {ParamOfferId} from '../../../types/param-offerid.type.js';
 
-type UpdateOfferRequest = Request<RequestParams, RequestBody, UpdateOfferDto>;
+type UpdateOfferRequest = Request<ParamOfferId, RequestBody, UpdateOfferDto>;
 
 export {UpdateOfferRequest};

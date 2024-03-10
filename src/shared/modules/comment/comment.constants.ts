@@ -1,0 +1,3 @@
+const DEFAULT_OFFERS_COUNT = 50;
+
+export {DEFAULT_OFFERS_COUNT};

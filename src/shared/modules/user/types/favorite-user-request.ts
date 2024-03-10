@@ -1,8 +1,8 @@
 import {Request} from 'express';
-import {RequestParams} from '../../../libs/rest/types/request.params.type.js';
-import {RequestBody} from '../../../libs/rest/types/request-body.type.js';
+import {RequestBody} from '../../../libs/rest/index.js';
 import {UpdateUserDto} from '../dto/update-user.dto.js';
+import {ParamOfferId} from '../../../types/param-offerid.type.js';
 
-type FavoriteUserRequest = Request<RequestParams, RequestBody, UpdateUserDto>;
+type FavoriteUserRequest = Request<ParamOfferId, RequestBody, UpdateUserDto>;
 
 export {FavoriteUserRequest};
