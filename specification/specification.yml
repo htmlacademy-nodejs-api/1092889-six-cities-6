@@ -571,7 +571,7 @@ components:
           type: number
         authorId:
           type: string
-        commentsCount:
+        commentCount:
           type: number
 
 

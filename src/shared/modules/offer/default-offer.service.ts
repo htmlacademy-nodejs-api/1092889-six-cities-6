@@ -8,12 +8,14 @@ import {CreateOfferDto} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {SortType} from '../../helpers/index.js';
 import {OfferCount} from './offer.constant.js';
+import {CommentService} from '../comment/index.js';
 
 @injectable()
 class DefaultOfferService implements OfferService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
-    @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>) {
+    @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
+    @inject(Component.CommentService) private readonly commentService: CommentService) {
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
@@ -25,15 +27,17 @@ class DefaultOfferService implements OfferService {
 
 
   public async find(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find().populate(['authorId']).exec();
+    return this.offerModel.find().populate('authorId').limit(OfferCount.DEFAULT).sort({date: SortType.DOWN}).exec();
   }
 
   public async findById(id: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findById(id).exec();
+    return this.offerModel.findById(id).populate('authorId').exec();
   }
 
   public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndDelete(offerId).exec();
+    const result = await this.offerModel.findByIdAndDelete(offerId).exec();
+    await this.commentService.deleteByOfferId(offerId);
+    return result;
   }
 
   public async exists(documentId: string): Promise<boolean> {
@@ -44,7 +48,7 @@ class DefaultOfferService implements OfferService {
     return this.offerModel
       .find({city: city}, {} , {limit: OfferCount.PREMIUM})
       .sort({date: SortType.DOWN})
-      .populate(['authorId'])
+      .populate('authorId')
       .exec();
   }
 
@@ -55,7 +59,7 @@ class DefaultOfferService implements OfferService {
   public async updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findByIdAndUpdate(offerId, dto, {new: true})
-      .populate(['authorId'])
+      .populate('authorId')
       .exec();
   }
 

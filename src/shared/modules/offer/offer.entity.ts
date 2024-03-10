@@ -1,5 +1,6 @@
-import {defaultClasses, getModelForClass, modelOptions, prop} from '@typegoose/typegoose';
+import {defaultClasses, modelOptions, prop, PropType} from '@typegoose/typegoose';
 import {Goods, ImageExtType, Location, OfferType, City} from '../../types/index.js';
+import {UserEntity} from '../user/index.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {}
@@ -29,7 +30,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required:true, type: String})
   public previewImage: ImageExtType;
 
-  @prop({required:true, type: String})
+  @prop({required:true, type: () => [String], trim: true}, PropType.ARRAY)
   public images: ImageExtType[];
 
   @prop({required:true, type: Boolean})
@@ -41,7 +42,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required:true, type: Number})
   public rating: number;
 
-  @prop({required:true, type: String})
+  @prop({required:true, type: () => [String], trim: true}, PropType.ARRAY)
   public type: OfferType;
 
   @prop({required:true, type: Number})
@@ -53,10 +54,10 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required:true, type: Number})
   public price: number;
 
-  @prop({required:true, type: String})
+  @prop({required:true, type: () => [String], trim: true}, PropType.ARRAY)
   public goods: Goods[];
 
-  @prop({required:true, type: String})
+  @prop({required:true, ref: UserEntity})
   public authorId: string;
 
   @prop({required:true, default: 0, type: Number})
@@ -66,4 +67,3 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public location: Location;
 }
 
-export const OfferModel = getModelForClass(OfferEntity);

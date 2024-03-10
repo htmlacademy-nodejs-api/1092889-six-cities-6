@@ -1,4 +1,5 @@
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
+import {UserRdo} from '../../user/index.js';
 
 class OfferShortRdo {
   @Expose()
@@ -35,7 +36,8 @@ class OfferShortRdo {
   public price:number;
 
   @Expose()
-  public authorId:string;
+  @Type(() => UserRdo)
+  public authorId: UserRdo;
 
   @Expose()
     commentsCount:number;

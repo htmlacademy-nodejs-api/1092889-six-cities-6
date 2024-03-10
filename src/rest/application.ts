@@ -15,8 +15,8 @@ class Application {
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.Config) private readonly config: Config<RestSchema>,
     @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
-    @inject(Component.OfferController) private readonly offerController: Controller,
     @inject(Component.UserController) private readonly userController: Controller,
+    @inject(Component.OfferController) private readonly offerController: Controller,
     @inject(Component.CommentController) private readonly commentController: Controller,
     @inject(Component.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilter) {
     this.server = express();
@@ -39,8 +39,8 @@ class Application {
   }
 
   private async initControllers() {
-    this.server.use('/offer', this.offerController.getRouter());
     this.server.use('/user', this.userController.getRouter());
+    this.server.use('/offer', this.offerController.getRouter());
     this.server.use('/comment', this.commentController.getRouter());
   }
 

@@ -6,3 +6,5 @@ export * from './component.enum.js';
 export * from './common.type.js';
 export * from './location.type.js';
 export * from './city.type.js';
+export * from './document-exists.interface.js';
+

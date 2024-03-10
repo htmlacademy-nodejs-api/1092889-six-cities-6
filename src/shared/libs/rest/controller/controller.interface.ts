@@ -1,5 +1,5 @@
 import {Response, Router} from 'express';
-import {Route} from '../types/router.interface.js';
+import {Route} from '../types/route.interface.js';
 
 interface Controller {
   readonly getRouter: () => Router;
