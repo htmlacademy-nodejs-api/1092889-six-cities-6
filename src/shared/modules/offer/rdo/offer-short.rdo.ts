@@ -1,48 +1,52 @@
 import {Expose, Type} from 'class-transformer';
 import {UserRdo} from '../../user/index.js';
+import {Location} from '../../location/location.js';
+import {City} from '../../../types/index.js';
 
 class OfferShortRdo {
   @Expose()
-  public id:string;
+  public id: string;
 
   @Expose()
-  public title:string;
+  public title: string;
 
   @Expose()
-  public description:string;
+  public description: string;
 
   @Expose()
-  public date:string;
+  public date: string;
 
   @Expose()
-  public city:string;
+  public city: City;
 
   @Expose()
-  public previewImage:string;
+  public previewImage: string;
 
   @Expose()
-  public isPremium:boolean;
+  public isPremium: boolean;
 
   @Expose()
-  public isFavorite:boolean;
+  public isFavorite: boolean;
 
   @Expose()
-  public rating:number;
+  public rating: number;
 
   @Expose()
-  public type:string;
+  public type: string;
 
   @Expose()
-  public price:number;
+  public price: number;
 
   @Expose({name: 'authorId'})
   @Type(() => UserRdo)
   public author: UserRdo;
 
   @Expose()
-    commentsCount:number;
-}
+  public commentsCount: number;
 
+  @Expose()
+  public location: Location;
+}
 
 export {OfferShortRdo};
 

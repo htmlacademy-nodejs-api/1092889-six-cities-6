@@ -14,7 +14,7 @@ class HelpCommand implements Command {
         Пример:
             ./main.cli.js --<command> [--arguments]
             или
-            npm run cli --<command> [--arguments]
+            npm run cli -- --<command> [--arguments]
         Команды:
             --version:                          ${chalk.green('# выводит информации о версии приложения.')}
             --help:                             ${chalk.green('# выводит информацию о списке поддерживаемых команд.')}

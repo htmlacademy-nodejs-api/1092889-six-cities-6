@@ -1,4 +1,4 @@
-import {Goods, Offer, OfferType, UserType, ImageExtType, City} from '../types/index.js';
+import {Goods, Offer, OfferType, UserType, ImageExtType, CityName} from '../types/index.js';
 import {getBooleanFromString} from './common.js';
 
 const createOffer = (offerData: string): Offer => {
@@ -7,6 +7,8 @@ const createOffer = (offerData: string): Offer => {
     description,
     date,
     city,
+    cityLongitude,
+    cityLatitude,
     previewImage,
     images,
     isPremium,
@@ -34,7 +36,10 @@ const createOffer = (offerData: string): Offer => {
     title,
     description,
     date: new Date(date),
-    city: city as City,
+    city: {cityName: city as CityName, cityLocation: {
+      longitude: Number(cityLongitude),
+      latitude: Number(cityLatitude)
+    }},
     previewImage: previewImage as ImageExtType,
     images: images.split(';') as ImageExtType[],
     isPremium: (getBooleanFromString(isPremium)),

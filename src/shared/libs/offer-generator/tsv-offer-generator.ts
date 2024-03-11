@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {OfferGenerator} from './offer-generator.interface.js';
-import {Location, MockServerData} from '../../types/index.js';
+import {City, Location, MockServerData} from '../../types/index.js';
 import {
   generateRandomValue,
   getRandomItem,
@@ -48,7 +48,7 @@ class TSVOfferGenerator implements OfferGenerator{
     const date = dayjs()
       .subtract(generateRandomValue(WeekDay.FIRST, WeekDay.LAST), 'day')
       .toISOString();
-    const city = getRandomItem<string>(this.mockData.cities);
+    const city = getRandomItem<City>(this.mockData.cities);
     const previewImage = getRandomItem<string>(this.mockData.previewImages);
     const offerImages = Array.from({length:OFFER_IMAGES_COUNT}, () => getRandomItem<string>(this.mockData.offerImages)).join(';');
     const isPremium = String(generateRandomBoolean());
@@ -65,7 +65,7 @@ class TSVOfferGenerator implements OfferGenerator{
     const userType = getRandomItem<string>(this.mockData.userTypes);
     const commentsCount = generateRandomValue(CommentsLength.MIN, CommentsLength.MAX);
 
-    return [title, description, date, city, previewImage,
+    return [title, description, date, city.cityName, city.cityLocation.latitude, city.cityLocation.longitude, previewImage,
       offerImages, isPremium, rating,
       type, rooms, maxAdults, price, goods, userName,
       email, avatar, userType, commentsCount, location.latitude, location.longitude

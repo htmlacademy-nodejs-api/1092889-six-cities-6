@@ -110,7 +110,7 @@ npm run cli
         Пример:
             ./main.cli.js --<command> [--arguments]
             или
-            npm run cli --<command> [--arguments]
+            npm run cli --  --<command> [--arguments]
         Команды:
             --version:                          # выводит информации о версии приложения.
             --help:                             # выводит информацию о списке поддерживаемых команд.

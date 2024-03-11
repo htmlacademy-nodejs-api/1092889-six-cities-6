@@ -1,5 +1,5 @@
 import {Expose, Type} from 'class-transformer';
-import {Goods, ImageExtType, Location} from '../../../types/index.js';
+import {City, Goods, ImageExtType, Location} from '../../../types/index.js';
 import {UserRdo} from '../../user/index.js';
 
 class OfferDetailedRdo {
@@ -16,7 +16,7 @@ class OfferDetailedRdo {
   public date:string;
 
   @Expose()
-  public city:string;
+  public city:City;
 
   @Expose()
   public previewImage:string;

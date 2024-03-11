@@ -14,6 +14,8 @@ tags:
     description: действия с пользователями
   - name: comments |-
     description: действия с комментариями
+servers:
+  - url: http://localhost:4001
 paths:
   /user/register:
     post:
@@ -332,7 +334,7 @@ paths:
       summary: Загрузить премиум предложения для города
       description: Загружает премиумные предложения для города
       parameters:
-        - name: city
+        - name: cityName
           in: query
           required: true
           schema:
@@ -664,7 +666,7 @@ components:
         date:
           type: string
         city:
-          type: string
+          $ref: '#/components/schemas/city'
         previewImage:
           type: string
         images:
@@ -694,12 +696,7 @@ components:
         commentsCount:
           type: number
         location:
-          type: object
-          properties:
-            latitude:
-              type: number
-            longitude:
-              type: string
+          $ref: '#/components/schemas/location'
 
     offerShort:
       type: object
@@ -714,7 +711,7 @@ components:
         date:
           type: string
         city:
-          type: string
+          $ref: '#/components/schemas/city'
         previewImage:
           type: string
         isPremium:
@@ -731,6 +728,8 @@ components:
           $ref: '#/components/schemas/user'
         commentCount:
           type: number
+        location:
+          $ref: '#/components/schemas/location'
 
     comment:
       type: object
@@ -745,6 +744,23 @@ components:
         author:
           $ref: '#/components/schemas/user'
 
+    location:
+      type: object
+
+      properties:
+        latitude:
+          type: latitude
+        longitude:
+          type: number
+
+    city:
+      type: object
+
+      properties:
+        cityName:
+          type: string
+        cityLocation:
+          $ref: '#/components/schemas/location'
   securitySchemes:
     bearerAuth:
       type: http

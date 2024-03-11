@@ -1,7 +1,8 @@
 import {defaultClasses, modelOptions, prop, PropType, Ref} from '@typegoose/typegoose';
-import {Goods, ImageExtType, OfferType, City} from '../../types/index.js';
+import {Goods, ImageExtType, OfferType} from '../../types/index.js';
 import {UserEntity} from '../user/index.js';
 import {Location} from '../location/location.js';
+import {City} from '../city/city.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {}
@@ -25,7 +26,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required:true, type: String})
   public date: Date;
 
-  @prop({required:true, type: String})
+  @prop({required:true, type: City, _id: false})
   public city: City;
 
   @prop({default:'default-offerImage.jpg',type: String})
