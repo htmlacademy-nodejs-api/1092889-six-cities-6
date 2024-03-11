@@ -3,7 +3,6 @@ const enum HttpMethod {
   POST = 'post',
   DELETE = 'delete',
   PATCH = 'patch',
-  PUT = 'put'
 }
 
 export {HttpMethod};

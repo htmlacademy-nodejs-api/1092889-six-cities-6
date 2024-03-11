@@ -6,7 +6,7 @@ import {
   ValidateDtoMiddleware,
   ValidateObjectIdMiddleware
 } from '../../libs/rest/index.js';
-import {Component} from '../../types/index.js';
+import {Component, ImageExtType} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {NextFunction, Request, Response} from 'express';
 import {UserService} from './types/user-service.interface.js';
@@ -23,13 +23,14 @@ import {DocumentExistsMiddleware} from '../../libs/rest/middleware/document-exis
 import {OfferService} from '../offer/index.js';
 import {AuthService} from '../auth/index.js';
 import {LoggedUserRdo} from './rdo/logged-user.rdo.js';
+import {UploadAvatarRdo} from './rdo/upload-avatar.rdo.js';
 
 @injectable()
 class UserController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
-    @inject(Component.Config) private readonly config: Config<RestSchema>,
+    @inject(Component.RestConfig) private readonly config: Config<RestSchema>,
     @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.AuthService) private readonly authService: AuthService) {
     super(logger);
@@ -89,13 +90,21 @@ class UserController extends BaseController {
 
     const token = await this.authService.authenticate(user);
 
-    const responseData = fillDTO(LoggedUserRdo, {email: user.email, token: token});
+    const responseData = fillDTO(LoggedUserRdo, {email: user.email, token});
 
     this.ok(res, responseData);
   }
 
-  public async uploadAvatar(req: Request, res: Response): Promise<void> {
-    this.created(res, {filepath: req?.file?.path});
+  public async uploadAvatar({params, file, tokenPayload}: Request, res: Response): Promise<void> {
+    const {userId} = params;
+    if(userId !== tokenPayload.id) {
+      throw new HttpError(StatusCodes.FORBIDDEN,
+        'Not enough rights to modify other userId',
+        'UserController');
+    }
+    const uploadFile = {avatar: file?.filename as ImageExtType};
+    await this.userService.updateById(userId, uploadFile);
+    this.created(res, fillDTO(UploadAvatarRdo,uploadFile));
   }
 
   public async checkAuth({tokenPayload}: LoginUserRequest, res: Response): Promise<void> {
@@ -114,8 +123,9 @@ class UserController extends BaseController {
   public async addFavorite({params, tokenPayload}: FavoriteUserRequest, res: Response): Promise<void>{
     const {offerId} = params;
     const user = await this.userService.findById(tokenPayload.id);
-    if(offerId in user!.favorites) {
-      this.created(res, fillDTO(UserRdo, user));
+
+    if(user!.favorites.includes(offerId)) {
+      throw new HttpError(StatusCodes.CONFLICT,'Favorite offer already in favorites', 'UserController');
     }
     const updatedUser = await this.userService.updateById(tokenPayload.id, {favorites: [...user!.favorites, offerId]});
     this.created(res, fillDTO(UserRdo, updatedUser));
@@ -123,13 +133,17 @@ class UserController extends BaseController {
 
   public async deleteFavorite({params, tokenPayload}: FavoriteUserRequest, res: Response): Promise<void>{
     const {offerId} = params;
-    const user = await this.userService.findById(tokenPayload.id);
-    if(offerId in user!.favorites) {
+    const user = await this.userService.findById(tokenPayload.id.toString());
+    if(user?.favorites === null || (user?.favorites.length === 0)) {
+
+      throw new HttpError(StatusCodes.NOT_FOUND,'Favorites is empty', 'UserController');
+    }
+    if(user!.favorites.includes(offerId)) {
       const updatedUser = await this.userService.updateById(tokenPayload.id, {favorites: [...user!.favorites.filter((id) => id !== offerId)]});
       this.noContent(res, fillDTO(UserRdo, updatedUser));
+      return;
     }
-
-    this.noContent(res, fillDTO(UserRdo, user));
+    throw new HttpError(StatusCodes.NOT_FOUND,'No such offerId in favorites', 'UserController');
   }
 }
 export {UserController};

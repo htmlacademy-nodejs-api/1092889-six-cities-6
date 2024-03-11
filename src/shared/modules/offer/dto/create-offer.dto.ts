@@ -1,16 +1,15 @@
 import {
-  ArrayMaxSize, ArrayMinSize,
+  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsDateString,
-  IsIn,
-  IsString,
+  IsIn, IsOptional,
   Length,
   Max,
   Min,
 } from 'class-validator';
 import {Goods, ImageExtType, Location, OfferType, City} from '../../../types/index.js';
-import {Cities, OfferTypes} from '../../../constants/index.js';
+import {Cities, OfferGoods, OfferTypes} from '../../../constants/index.js';
 import {createOfferValidationMessage} from './create-offer.messages.js';
 
 class CreateOfferDto {
@@ -26,18 +25,14 @@ class CreateOfferDto {
   @IsIn(Cities, {message: createOfferValidationMessage.city.invalidCity })
   public city: City;
 
-  @IsString({message: createOfferValidationMessage.previewImage.invalidFormat })
+  @IsOptional()
   public previewImage: ImageExtType;
 
-  @ArrayMinSize(6,{message: createOfferValidationMessage.images.invalidImages })
-  @ArrayMaxSize(6,{message: createOfferValidationMessage.images.invalidImages })
+  @IsOptional()
   public images: ImageExtType[];
 
   @IsBoolean({message: createOfferValidationMessage.isPremium.notBoolean })
   public isPremium: boolean;
-
-  @IsBoolean({message: createOfferValidationMessage.isFavorite.notBoolean })
-  public isFavorite: boolean;
 
   @Min(1, {message: createOfferValidationMessage.rating.min })
   @Max(5, {message: createOfferValidationMessage.rating.max })
@@ -60,6 +55,7 @@ class CreateOfferDto {
 
   @IsArray({message: createOfferValidationMessage.goods.notArray})
   @ArrayMinSize(1, {message: createOfferValidationMessage.goods.empty })
+  @IsIn(OfferGoods, {each: true, message: createOfferValidationMessage.goods.invalid })
   public goods: Goods[];
 
   public authorId: string;

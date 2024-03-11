@@ -1,4 +1,5 @@
 import {Goods, Offer, OfferType, UserType, ImageExtType, City} from '../types/index.js';
+import {getBooleanFromString} from './common.js';
 
 const createOffer = (offerData: string): Offer => {
   const [
@@ -38,8 +39,8 @@ const createOffer = (offerData: string): Offer => {
     city: city as City,
     previewImage: previewImage as ImageExtType,
     images: images.split(';') as ImageExtType[],
-    isPremium: (isPremium === 'true'),
-    isFavorite: (isFavorite === 'true'),
+    isPremium: (getBooleanFromString(isPremium)),
+    isFavorite: (getBooleanFromString(isFavorite)),
     rating: Number(rating),
     type: type as OfferType,
     bedrooms: Number(bedrooms),

@@ -6,8 +6,8 @@ class CreateCommentDto {
   @Length(5, 1024, {message: createCommentValidationMessage.content.length})
     content: string;
 
-  @Min(5, {message: createCommentValidationMessage.rating.min})
-  @Max(1024, {message: createCommentValidationMessage.rating.max})
+  @Min(1, {message: createCommentValidationMessage.rating.min})
+  @Max(5, {message: createCommentValidationMessage.rating.max})
     rating: number;
 
   authorId: string;

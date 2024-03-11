@@ -47,7 +47,11 @@ class CommentController extends BaseController {
   public async create({params, body, tokenPayload}: CreateCommentRequest, res: Response): Promise<void> {
     const {offerId} = params;
     const comment = await this.commentService.create({...body, authorId: tokenPayload.id, offerId});
+    const avgRating = await this.commentService.findAvgRatingByOfferId(offerId);
+
+    await this.offerService.updateById(offerId, {rating: avgRating});
     await this.offerService.incCommentCount(comment.offerId);
+
     this.created(res, fillDTO(CommentRdo, comment));
   }
 

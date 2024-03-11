@@ -44,7 +44,8 @@ const createOfferValidationMessage = {
   },
   goods: {
     notArray: 'should be an array of goods',
-    empty: 'shouldn\'t be empty'
+    empty: 'shouldn\'t be empty',
+    invalid: 'invalidGoods'
   },
   authorId: {
     invalidObjectId: 'invalid AuthorId'

@@ -5,7 +5,8 @@ import {CreateCommentDto} from './dto/create-comment.dto.js';
 interface CommentService {
   create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>>,
   findByOfferId(id: string): Promise<DocumentType<CommentEntity>[]>
-  deleteByOfferId(id: string): Promise<number>
+  deleteByOfferId(id: string): Promise<number>,
+  findAvgRatingByOfferId(id:string): Promise<number>
 }
 
 export {CommentService};

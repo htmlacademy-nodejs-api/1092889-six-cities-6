@@ -3,10 +3,12 @@ import {resolve} from 'node:path';
 import chalk from 'chalk';
 
 import {Command} from './command.interface.js';
+import {injectable} from 'inversify';
 
 type PackageJSONConfig = {
   version: string;
 };
+
 function isPackageJSONConfig(value: unknown): value is PackageJSONConfig {
   return (
     typeof value === 'object' &&
@@ -15,7 +17,7 @@ function isPackageJSONConfig(value: unknown): value is PackageJSONConfig {
       Object.hasOwn(value, 'version')
   );
 }
-
+@injectable()
 class VersionCommand implements Command {
   private readonly filePath = './package.json';
 

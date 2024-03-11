@@ -1,11 +1,12 @@
+import {inject, injectable} from 'inversify';
+import {DocumentType, types} from '@typegoose/typegoose';
 import {UserService} from './types/user-service.interface.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
-import {DocumentType, types} from '@typegoose/typegoose';
 import {Component} from '../../types/index.js';
 import {UserEntity} from './user.entity.js';
-import {inject, injectable} from 'inversify';
 import {Logger} from '../../libs/logger/index.js';
 import {UpdateUserDto} from './dto/update-user.dto.js';
+import {DEFAULT_AVATAR_FILE_NAME} from './constants/user.constant.js';
 
 @injectable()
 class DefaultUserService implements UserService {
@@ -16,7 +17,7 @@ class DefaultUserService implements UserService {
   }
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new UserEntity(dto);
+    const user = new UserEntity({...dto, avatar: DEFAULT_AVATAR_FILE_NAME});
     user.setPassword(dto.password, salt);
 
     const result = await this.userModel.create(user);

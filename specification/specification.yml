@@ -8,11 +8,11 @@ info:
     url: https://opensource.org/licenses/MIT
   version: 2.0.0
 tags:
-  - name: offers
+  - name: offers |-
     description: действия с предложениями
-  - name: users
+  - name: users |-
     description: действия с пользователями
-  - name: comments
+  - name: comments |-
     description: действия с комментариями
 paths:
   /user/register:
@@ -21,7 +21,6 @@ paths:
         - user
       summary: Регистрация пользователя
       description: Регистрирует нового пользователя
-
       requestBody:
         description: Информация для создания нового пользователя
         content:
@@ -36,8 +35,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/user'
+        "400":
+          description: Неправильно составлен запрос или неверные данные.
         "409":
           description: Пользователь с таким email уже зарегестрирован
+
   /user/login:
     post:
       tags:
@@ -49,17 +51,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
+              $ref: '#/components/schemas/loginUser'
       responses:
         '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loggedUser'
           description: Пользователь авторизован
         '400':
-          description: Неправильно составлен запрос или нверные данные.
+          description: Неправильно составлен запрос или неверные данные.
+        '401':
+          description: Неверный пароль или email
         '404':
           description: Пользователь с такими данными не найден.
         '5XX':
@@ -69,8 +72,14 @@ paths:
         - user
       summary: Проверка состояния пользователя
       description: Возвращает информацию по авторизированному пользователю
+      security:
+        - BearerAuth: [ ]
       responses:
         '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
           description: Пользователь аутентифицирован
         '401':
           description: Пользователь не аутентифицирован.
@@ -83,19 +92,40 @@ paths:
         - user
       summary: Загрузить изображение аватара
       description: Загружает изображение аватара пользователя. Изображение аватара должно быть в формате png или jpg
+      security:
+        - BearerAuth: [ ]
       parameters:
         - name: userId
           in: path
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
       responses:
-        '200':
-          description: Аватар успешно загужен
+        '201':
+          description: Аватар успешно загружен.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar:
+                    type: string
+                    description: URL аватара на сервере.
         '400':
           description: Неверный запрос или данные.
         '401':
           description: Требуется аутентификация.
+        '403':
+          description: Недостаточно прав для редатирования
         '404':
           description: Польователь не найден.
         '5XX':
@@ -107,6 +137,8 @@ paths:
         - user
       summary: Добавить оффер в избранное
       description: Добавляет оффер в избранное
+      security:
+        - BearerAuth: [ ]
       parameters:
         - name: offerId
           in: path
@@ -115,6 +147,10 @@ paths:
             type: string
       responses:
         '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
           description: Предложение добавлено в избранное
         '400':
           description: Неверно задан запрос.
@@ -122,6 +158,8 @@ paths:
           description: Требуется аутентификация.
         '404':
           description: Предложение не найдено.
+        "409":
+          description: Такое предложение уже присутствует в избранном
         '5XX':
           description: Ошибка сервера.
 
@@ -130,6 +168,8 @@ paths:
         - user
       summary: Убрать оффер из избранного
       description: Убирает оффер из избранного
+      security:
+        - BearerAuth: [ ]
       parameters:
         - name: offerId
           in: path
@@ -144,7 +184,7 @@ paths:
         '401':
           description: Требуется аутентификация.
         '404':
-          description: Предложение не найдено.
+          description: Предложение не найдено или в избранном ничего нет
         '5XX':
           description: Ошибка сервера.
 
@@ -171,6 +211,8 @@ paths:
         - offer
       summary: Создать предлжение
       description: Создание предложения
+      security:
+        - BearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -192,14 +234,14 @@ paths:
         '5XX':
           description: Ошибка сервера.
 
-  /offer/{id}:
+  /offer/{offerId}:
     get:
       tags:
         - offer
       summary: Загрузить предложение
       description: Загружает выбранное предлжение
       parameters:
-        - name: id
+        - name: offerId
           in: path
           required: true
           schema:
@@ -224,8 +266,10 @@ paths:
         - offer
       summary: Обновить предлжение
       description: Вносит изменения в выбранное предложение
+      security:
+        - BearerAuth: [ ]
       parameters:
-        - name: id
+        - name: offerId
           in: path
           required: true
           schema:
@@ -260,8 +304,10 @@ paths:
         - offer
       summary: Удалить выбранное предложение
       description: Удаляет выбранное предложение
+      security:
+        - BearerAuth: [ ]
       parameters:
-        - name: id
+        - name: offerId
           in: path
           required: true
           schema:
@@ -302,11 +348,108 @@ paths:
                   $ref: '#/components/schemas/offerShort'
         '400':
           description: Неверно составлен запрос.
-        '404':
-          description: Предложения не найдены.
         '5XX':
           description: Ошибка сервера.
 
+
+
+  /offer/{id}/preview:
+
+    patch:
+      tags:
+        - offer
+      summary: Обновить превью предлжения
+      description: Загружает изображение превью предложения
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Идентификатор предложения
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Превью оффера успешно загружено.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  previewImage:
+                    type: string
+                    description: URL превью на сервере.
+        '400':
+          description: Неверно составлен запрос или заполнены данные.
+        '401':
+          description: Требуется аутентификация
+        '403':
+          description: Недостаточно прав для редактирования предложения
+        '404':
+          description: Предложение не найдено.
+        '5XX':
+          description: Ошибка сервера.
+
+  /offer/{id}/images:
+
+    patch:
+      tags:
+        - offer
+      summary: Обновить изображения предлжения
+      description: Загружает 6 изображений для предложения
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Идентификатор предложения
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  images:
+                    type: array
+                    items:
+                      type: string
+                      description: URL изображения предложения на сервере.
+        '400':
+          description: Неверно составлен запрос или заполнены данные.
+        '401':
+          description: Требуется аутентификация
+        '403':
+          description: Недостаточно прав для редактирования предложения
+        '404':
+          description: Предложение не найдено.
+        '5XX':
+          description: Ошибка сервера.
 
   /offer/favorites:
     get:
@@ -314,6 +457,8 @@ paths:
         - offer
       summary:  Загрузить избранные предложения
       description: Загружает избранные предложения
+      security:
+        - BearerAuth: [ ]
       responses:
         '200':
           description: OK
@@ -356,7 +501,7 @@ paths:
         '400':
           description: Неправильно составлен запрос.
         '404':
-          description: Коментарии не найдены.
+          description: Предложение для комментария с таким id не найдено.
         '5XX':
           description: Ошибка сервера.
 
@@ -365,6 +510,8 @@ paths:
         - comment
       summary: Создать комментарий
       description: Создать комментарий для выбранного предложения
+      security:
+        - BearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -383,7 +530,7 @@ paths:
         '401':
           description: Требуется аутентификация.
         '404':
-          description: Неудалось создать комментарий.
+          description: Предложение для комментария с таким id не найдено.
         '5XX':
           description: Ошибка сервера.
 
@@ -414,6 +561,31 @@ components:
           type: string
           example: pro
 
+    loggedUser:
+      type: object
+
+      properties:
+        token:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        avatar:
+          type: string
+        type:
+          type: string
+
+
+    loginUser:
+      type: object
+
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
     createOffer:
       type: object
 
@@ -426,15 +598,7 @@ components:
           type: string
         city:
           type: string
-        previewImage:
-          type: string
-        images:
-          type: array
-          items:
-            type: string
         isPremium:
-          type: boolean
-        isFavorite:
           type: boolean
         rating:
           type: number
@@ -450,8 +614,6 @@ components:
           type: array
           items:
             type: string
-        authorId:
-          type: string
         location:
           type: object
           properties:
@@ -466,12 +628,8 @@ components:
       properties:
         content:
           type: string
-        date:
-          type: string
         rating:
           type: number
-        authorId:
-          type: string
 
     user:
       type: object
@@ -532,7 +690,7 @@ components:
           items:
             type: string
         authorId:
-          type: string
+          $ref: '#/components/schemas/user'
         commentsCount:
           type: number
         location:
@@ -570,17 +728,14 @@ components:
         price:
           type: number
         authorId:
-          type: string
+          $ref: '#/components/schemas/user'
         commentCount:
           type: number
-
 
     comment:
       type: object
 
       properties:
-        id:
-          type: string
         content:
           type: string
         date:
@@ -588,4 +743,10 @@ components:
         rating:
           type: number
         author:
-          type: string
+          $ref: '#/components/schemas/user'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

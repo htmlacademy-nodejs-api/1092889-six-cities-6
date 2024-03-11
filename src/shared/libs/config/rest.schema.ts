@@ -12,7 +12,9 @@ type RestSchema = {
   DB_PORT: string,
   DB_NAME: string,
   UPLOAD_DIRECTORY: string,
-  JWT_SECRET: string
+  JWT_SECRET: string,
+  HOST: string,
+  STATIC_DIRECTORY: string
 }
 
 const configRestSchema = convict<RestSchema>({
@@ -69,6 +71,18 @@ const configRestSchema = convict<RestSchema>({
     format: String,
     env: 'JWT_SECRET',
     default: null
+  },
+  HOST: {
+    doc: 'Host where service launched',
+    format: String,
+    emv: 'HOST',
+    default: 'localhost'
+  },
+  STATIC_DIRECTORY: {
+    doc: 'Directory for static files',
+    format: String,
+    env: 'STATIC_DIRECTORY',
+    default: 'static'
   }
 });
 
