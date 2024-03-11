@@ -1,0 +1,118 @@
+## Get offers
+GET http://localhost:4000/offer HTTP/1.1
+Content-Type: application/json
+
+###
+##Get offer with id: 65e5a2ade287be396d8a18d5
+GET http://localhost:4000/offer/65e5a2ade287be396d8a1909 HTTP/1.1
+Content-Type: application/json
+
+###
+POST http://localhost:4000/offer HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1ZWU2ZTA2OWU2YzVkMWJkNDM5MTk5MiIsIm5hbWUiOiJHZW9yZ2UiLCJlbWFpbCI6ImV4YW1wbGVAZXhpci5jb20iLCJ0eXBlIjoicHJvIiwiaWF0IjoxNzEwMTI0NjYwLCJleHAiOjE3MTAyOTc0NjB9.FwXYzi1mcbxuFeksWhvAhPfnb4U2VU_YjBhvNZbkK2E
+Content-Type: application/json
+
+{
+   "title": "Best Appart Ever",
+   "description": "Best Appart EverBest Appart EverBest Appart Ever",
+   "date": "2024-03-10T01:53:18.530Z",
+   "city": "Paris",
+   "previewImage": "avatar.jpg",
+   "images": ["avatar.jpg", "offer2.jpg","offer3.jpg","offer4.jpg","offer5.jpg","offer6.jpg"],
+  "isPremium": true,
+  "isFavorite": false,
+  "rating": 4,
+  "type": "apartment",
+  "bedrooms": 4,
+  "maxAdults": 3,
+  "price": 200,
+  "goods": ["Breakfast" , "Air Conditioning" , "Laptop friendly workspace"],
+  "authorId": "65e5a2ade287be396d8a18d3",
+  "commentCount": 0,
+  "location": {
+    "latitude": 53.2456343,
+    "longitude": 8.32598986
+  }
+}
+###
+## Delete offer
+DELETE http://localhost:4000/offer/65ecece7188e6a272cd789b8 HTTP/1.1
+###
+## Update Offer
+PATCH http://localhost:4000/offer/65ee7ad51fcdd1b211b93abf HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1ZWU3YjA1MWZjZGQxYjIxMWI5M2FjYSIsIm5hbWUiOiJHZW9yZGdlIiwiZW1haWwiOiJleGFtcGxlQGV4b2Zpci5jb20iLCJ0eXBlIjoicHJvIiwiaWF0IjoxNzEwMTI3ODk1LCJleHAiOjE3MTAzMDA2OTV9.KkfVZA_dFWoYzTtyLgJe98ifM0PYMma_8HxVAXyOd4k
+
+Content-Type: application/json
+
+ {
+   "city": "Dusseldorf",
+   "previewImage": "avatar-second.jpg",
+   "images": ["avatar.jpg","offer6.jpg","offer8.jpg","offer4.jpg","offer5.jpg","offer6.jpg"]
+  }
+###
+## Get Premium offers in Paris
+GET http://localhost:4000/offer/premium?city=Paris HTTP/1.1
+Content-Type: application/json
+
+###
+PATCH http://localhost:4000/offer/65ee121e23ff75fa6e9ddb9a/images HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1ZWI4NzEyYTIyZjMxODM2NWVjNmQ0NSIsIm5hbWUiOiJKb2huIiwiZW1haWwiOiJleGFtcGxlQG1haWwuY29tIiwidHlwZSI6InJlZ3VsYXIiLCJpYXQiOjE3MTAwNzc3MTYsImV4cCI6MTcxMDI1MDUxNn0.143NCz7OxU9m6cobo8Qq4U1JQtDjfdL0NIu5X07pq1g
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="offerImage1.jpg"
+Content-Type: image/jpeg
+
+< test-image-request/offerImage1.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="ico-adultsofferImage2.jpg"
+Content-Type: image/jpeg
+
+< test-image-request/offerImage2.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="offerImage3.jpg"
+Content-Type: image/jpeg
+
+< test-image-request/offerImage3.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="offerImage4.jpg"
+Content-Type: image/jpeg
+
+< test-image-request/offerImage4.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="offerImage5.jpg"
+Content-Type: image/jpeg
+
+< test-image-request/offerImage5.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="offerImage6.jpg"
+Content-Type: image/jpeg
+
+< test-image-request/offerImage6.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+###
+PATCH http://localhost:4000/offer/65ee121e23ff75fa6e9ddb9a/preview HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1ZWI4NzEyYTIyZjMxODM2NWVjNmQ0NSIsIm5hbWUiOiJKb2huIiwiZW1haWwiOiJleGFtcGxlQG1haWwuY29tIiwidHlwZSI6InJlZ3VsYXIiLCJpYXQiOjE3MTAwNzc3MTYsImV4cCI6MTcxMDI1MDUxNn0.143NCz7OxU9m6cobo8Qq4U1JQtDjfdL0NIu5X07pq1g
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="preview"; filename="img.png"
+Content-Type: image/png
+
+< test-image-request/img.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+##Get Favorites
+GET http://localhost:4000/offer/favorites HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1ZWI4NzEyYTIyZjMxODM2NWVjNmQ0NSIsIm5hbWUiOiJKb2huIiwiZW1haWwiOiJleGFtcGxlQG1haWwuY29tIiwidHlwZSI6InJlZ3VsYXIiLCJpYXQiOjE3MTAwNzc3MTYsImV4cCI6MTcxMDI1MDUxNn0.143NCz7OxU9m6cobo8Qq4U1JQtDjfdL0NIu5X07pq1g

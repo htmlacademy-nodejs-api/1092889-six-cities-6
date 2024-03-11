@@ -3,32 +3,29 @@ import {Command} from './command.interface.js';
 import {TSVFileReader} from '../../shared/libs/file-reader/index.js';
 import {getErrorMessage, createOffer, getMongoURI} from '../../shared/helpers/index.js';
 import {UserService} from '../../shared/modules/user/types/user-service.interface.js';
-import {DefaultOfferService, OfferService} from '../../shared/modules/offer/index.js';
-import {DatabaseClient, MongoDatabaseClient} from '../../shared/libs/database-client/index.js';
-import {ConsoleLogger, Logger} from '../../shared/libs/logger/index.js';
-import {DefaultUserService, } from '../../shared/modules/user/index.js';
-import {Offer} from '../../shared/types/index.js';
-import {DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD} from './command.constant.js';
-import {CommentModel, OfferModel, UserModel} from '../../shared/modules/models-init.js';
-import {CommentService, DefaultCommentService} from '../../shared/modules/comment/index.js';
+import {OfferService} from '../../shared/modules/offer/index.js';
+import {DatabaseClient} from '../../shared/libs/database-client/index.js';
+import {Logger} from '../../shared/libs/logger/index.js';
+import {Component, Offer} from '../../shared/types/index.js';
+import {DEFAULT_USER_PASSWORD} from './command.constant.js';
+import {CommentService} from '../../shared/modules/comment/index.js';
+import {inject, injectable} from 'inversify';
+import {CliSchema, Config} from '../../shared/libs/config/index.js';
 
+@injectable()
 class ImportCommand implements Command {
-  private readonly userService: UserService;
-  private readonly offerService: OfferService;
-  private readonly commentService: CommentService;
-  private readonly databaseClient: DatabaseClient;
-  private readonly logger: Logger;
   private salt: string;
 
-  constructor() {
+  constructor(
+    @inject(Component.UserService) private readonly userService: UserService,
+    @inject(Component.CommentService) readonly commentService: CommentService,
+    @inject(Component.OfferService) private readonly offerService: OfferService,
+    @inject(Component.DatabaseClient) readonly databaseClient: DatabaseClient,
+    @inject(Component.Logger) readonly logger: Logger,
+    @inject(Component.CliConfig) private readonly config: Config<CliSchema>
+  ) {
     this.onImportedLine = this.onImportedLine.bind(this);
     this.onCompleteImport = this.onCompleteImport.bind(this);
-
-    this.logger = new ConsoleLogger();
-    this.userService = new DefaultUserService(this.logger, UserModel);
-    this.commentService = new DefaultCommentService(this.logger, CommentModel);
-    this.offerService = new DefaultOfferService(this.logger, OfferModel, this.commentService);
-    this.databaseClient = new MongoDatabaseClient(this.logger);
   }
 
   get name(): string {
@@ -58,8 +55,14 @@ class ImportCommand implements Command {
   }
 
   public async execute(...parameters: string[]){
-    const [filename, login, password, host, dbname, salt] = parameters;
-    const uri = getMongoURI(login, password, host, DEFAULT_DB_PORT, dbname);
+    const [filename] = parameters;
+    const salt = this.config.get('SALT');
+    const uri = getMongoURI(
+      this.config.get('DB_USER'),
+      this.config.get('DB_PASSWORD'),
+      this.config.get('DB_ADDRESS'),
+      this.config.get('DB_PORT'),
+      this.config.get('DB_PORT'));
     this.salt = salt;
 
     await this.databaseClient.connect(uri);

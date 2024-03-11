@@ -1,6 +1,8 @@
 import {Command} from './command.interface.js';
 import chalk from 'chalk';
+import {injectable} from 'inversify';
 
+@injectable()
 class HelpCommand implements Command {
   get name(): string {
     return '--help';

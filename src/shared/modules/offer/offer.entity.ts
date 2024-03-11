@@ -27,19 +27,19 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required:true, type: String})
   public city: City;
 
-  @prop({required:true, type: String})
+  @prop({default:'default-offerImage.jpg',type: String})
   public previewImage: ImageExtType;
 
-  @prop({required:true, type: () => [String], trim: true}, PropType.ARRAY)
+  @prop({default: '',type: () => [String], trim: true}, PropType.ARRAY)
   public images: ImageExtType[];
 
   @prop({required:true, type: Boolean})
   public isPremium: boolean;
 
-  @prop({required:true, default: false, type: Boolean})
+  @prop({default: false, type: Boolean})
   public isFavorite: boolean;
 
-  @prop({required:true, type: Number})
+  @prop({default: 0, type: Number})
   public rating: number;
 
   @prop({required:true, type: () => [String], trim: true}, PropType.ARRAY)
@@ -60,7 +60,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required:true, ref: UserEntity})
   public authorId: string;
 
-  @prop({required:true, default: 0, type: Number})
+  @prop({default: 0, type: Number})
   public commentCount: number;
 
   @prop({set: (value: Location) => JSON.stringify(value), get: (value: string) => JSON.parse(value) ,default: '', type: String})

@@ -1,4 +1,4 @@
-type ImageExtType = `${string}.jpg` | `${string}.png`;
+type ImageExtType = `${string}.jpg` | `${string}.png` | `${string}.jpeg`;
 
 export {ImageExtType};
 

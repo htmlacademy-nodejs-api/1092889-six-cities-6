@@ -24,7 +24,7 @@ const enum CommentsLength {
 }
 
 const enum Rating {
-  MIN = 0,
+  MIN = 1,
   MAX = 5
 }
 
@@ -46,7 +46,7 @@ class TSVOfferGenerator implements OfferGenerator{
     const previewImage = getRandomItem<string>(this.mockData.previewImages);
     const offerImages = Array.from({length:6}, () => getRandomItem<string>(this.mockData.offerImages)).join(';');
     const isPremium = String(generateRandomBoolean());
-    const isFavorite = String(generateRandomBoolean());
+    const isFavorite = false;
     const rating = generateRandomValue(Rating.MIN, Rating.MAX, 1).toString();
     const type = getRandomItem<string>(this.mockData.types);
     const rooms = generateRandomValue(Rooms.MIN, Rooms.MAX).toString();
@@ -58,12 +58,12 @@ class TSVOfferGenerator implements OfferGenerator{
     const email = getRandomItem<string>(this.mockData.emails);
     const avatar = getRandomItem<string>(this.mockData.avatars);
     const userType = getRandomItem<string>(this.mockData.userTypes);
-    const comments = generateRandomValue(CommentsLength.MIN, CommentsLength.MAX).toString();
+    const commentsCount = generateRandomValue(CommentsLength.MIN, CommentsLength.MAX).toString();
 
     return [title, description, date, city, previewImage,
       offerImages, isPremium, isFavorite, rating,
       type, rooms, maxAdults, price, goods, userName,
-      email, avatar, userType, comments, location
+      email, avatar, userType, commentsCount, location
     ].join('\t');
   }
 

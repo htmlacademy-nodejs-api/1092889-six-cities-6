@@ -9,6 +9,7 @@ import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {SortType} from '../../helpers/index.js';
 import {OfferCount} from './offer.constant.js';
 import {CommentService} from '../comment/index.js';
+import {DefaultOffer} from './constants/offer.constant.js';
 
 @injectable()
 class DefaultOfferService implements OfferService {
@@ -19,15 +20,16 @@ class DefaultOfferService implements OfferService {
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create(dto);
+    const defaultImages = Array.from({length: 6}, () => DefaultOffer.IMAGE);
+    const result = await this.offerModel.create({...dto, previewImage: DefaultOffer.PREVIEW, images: defaultImages});
     this.logger.info(`New offer has been created title: ${result.title} id: ${result.id}`);
 
     return result;
   }
 
 
-  public async find(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find().populate('authorId').limit(OfferCount.DEFAULT).sort({date: SortType.DOWN}).exec();
+  public async find(limit: number): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find().populate('authorId').limit(limit).sort({date: SortType.DOWN}).exec();
   }
 
   public async findById(id: string): Promise<DocumentType<OfferEntity> | null> {
@@ -65,8 +67,6 @@ class DefaultOfferService implements OfferService {
 
   public async findFavorites(authorId: string): Promise<DocumentType<OfferEntity>[]>{
     return this.offerModel.aggregate([
-      {$match: {isFavorite: true}},
-      {$addFields:{isFavorite: false}},
       {
         $lookup: {
           from: 'users',
@@ -77,72 +77,27 @@ class DefaultOfferService implements OfferService {
               check: {$in: [{$toString: '$$id'}, '$favorites']}
             },
             },
-            {$project: {_id: 1, name: 1, avatar: 1, type: 1, check: 1}}],
+            {$project: {id: 1, name: 1, avatar: 1, type: 1, check: 1}}],
           as: 'favorites'
         }},
       {
         $addFields:
-            {isFavorite: {$arrayElemAt: ['$favorites.check', 0]}}
+            {isFavorite: {$arrayElemAt: ['$favorites.check', 0]}},
       },
       {
         $addFields:
-          {author: '$favorites'}
+          {authorId: {$arrayElemAt: ['$favorites', 0]}}
       },
       {$match: {isFavorite: true}},
       {$unset: 'favorites'},
-      {$unset: 'author.check'}
     ]).exec();
   }
 
-  public async updateCommentsCount(offerId: string): Promise<DocumentType<Pick<OfferEntity, 'commentCount'>>> {
-    const result = await this.offerModel.aggregate([
-      {$match: {_id: new mongoose.Types.ObjectId(offerId)}},
-      {
-        $lookup: {
-          from: 'comments',
-          let: {id: offerId},
-          pipeline: [
-            {$match: {$match: { $expr: { $in: ['$$id', '$offerId']}}}},
-            {$project: {_id: 1}}],
-          as: 'comments'
-        }},
-      {
-        $addFields:
-        {commentsCount: {$size: ['$comments']}}
-      },
-      {$unset: 'comments'},
-      {$project: {commentsCount: 1}}
-    ]).exec();
-    if(result.length!) {
-      throw new Error('Not valid commentCount');
-    }
-    return result[0];
+  public async checkOwner(offerId: string, authorId: string): Promise<boolean> {
+    const offer = await this.offerModel.findById(offerId);
+    return offer!.authorId.toString() === authorId;
   }
 
-  public async updateRating(offerId: string): Promise<DocumentType<Pick<OfferEntity, 'rating'>>> {
-    const result = await this.offerModel.aggregate([
-      {$match: {_id: new mongoose.Types.ObjectId(offerId)}},
-      {
-        $lookup: {
-          from: 'comments',
-          let: {id: offerId},
-          pipeline: [
-            {$match: {$match: { $expr: { $in: ['$$id', '$offerId']}}}},
-            {$project: {rating: 1}}],
-          as: 'comments'
-        }},
-      {
-        $addFields:
-        {commentsCount: {$avg: ['$comments.rating', '$commentsCount']}}
-      },
-      {$unset: 'comments'},
-      {$project: {rating: 1}}
-    ]).exec();
-    if(result.length!) {
-      throw new Error('Not valid rating');
-    }
-    return result[0];
-  }
 }
 
 

@@ -9,7 +9,7 @@ import {Config, RestSchema} from '../../libs/config/index.js';
 import * as crypto from 'node:crypto';
 import {TokenPayload} from './types/token-payload.js';
 import {SignJWT} from 'jose';
-import {JWT} from './auth.constant.js';
+import {Jwt} from './auth.constant.js';
 import {UserIncorrectPasswordException, UserNotFoundException} from '../../libs/rest/index.js';
 
 @injectable()
@@ -18,7 +18,7 @@ class DefaultAuthService implements AuthService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
-    @inject(Component.Config) private readonly config: Config<RestSchema>
+    @inject(Component.RestConfig) private readonly config: Config<RestSchema>
   ) {
   }
 
@@ -34,9 +34,9 @@ class DefaultAuthService implements AuthService {
 
     this.logger.info(`Create token for ${user.email}`);
     return new SignJWT(tokenPayload)
-      .setProtectedHeader({alg: JWT.ALGORITHM})
+      .setProtectedHeader({alg: Jwt.ALGORITHM})
       .setIssuedAt()
-      .setExpirationTime(JWT.EXPIRED)
+      .setExpirationTime(Jwt.EXPIRED)
       .sign(secretKey);
   }
 

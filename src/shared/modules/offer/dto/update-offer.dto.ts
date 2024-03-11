@@ -16,13 +16,13 @@ import {updateOfferValidationMessage} from './update-offer.message.js';
 
 class UpdateOfferDto {
 
-    @IsOptional()
+  @IsOptional()
   @Length(10,100, {message: updateOfferValidationMessage.title.length })
   public title?: string;
 
   @IsOptional()
   @Length(20,1024, {message: updateOfferValidationMessage.description.length })
-    public description?: string;
+  public description?: string;
 
   @IsOptional()
   @IsDateString({},{message: updateOfferValidationMessage.date.invalidFormat })

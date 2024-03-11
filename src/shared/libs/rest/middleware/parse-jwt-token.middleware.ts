@@ -38,11 +38,12 @@ class ParseJwtTokenMiddleware implements Middleware {
       }
     } catch {
 
-      return next(new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        'Invalid token',
-        'AuthenticationMiddleware'
-      ));
+      return next(
+        new HttpError(
+          StatusCodes.UNAUTHORIZED,
+          'Invalid token',
+          'AuthenticationMiddleware'
+        ));
     }
   }
 }
