@@ -7,7 +7,6 @@ import {OfferService} from '../../shared/modules/offer/index.js';
 import {DatabaseClient} from '../../shared/libs/database-client/index.js';
 import {Logger} from '../../shared/libs/logger/index.js';
 import {Component, Offer} from '../../shared/types/index.js';
-import {DEFAULT_USER_PASSWORD} from './command.constant.js';
 import {CommentService} from '../../shared/modules/comment/index.js';
 import {inject, injectable} from 'inversify';
 import {CliSchema, Config} from '../../shared/libs/config/index.js';
@@ -46,7 +45,7 @@ class ImportCommand implements Command {
   private async saveOffer(offer: Offer) {
     const user = await this.userService.findOrCreate({
       ...offer.author,
-      password: DEFAULT_USER_PASSWORD
+      password: this.config.get('DEFAULT_USER_PASSWORD')
     }, this.salt);
 
     await this.offerService.create({

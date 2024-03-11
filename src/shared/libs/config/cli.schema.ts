@@ -10,6 +10,7 @@ type CliSchema = {
   DB_PASSWORD: string,
   DB_PORT: string,
   DB_NAME: string,
+  DEFAULT_USER_PASSWORD: string
 }
 
 const configCliSchema = convict<CliSchema>({
@@ -48,6 +49,12 @@ const configCliSchema = convict<CliSchema>({
     format: String,
     env: 'DB_NAME',
     default: 'six-cities'
+  },
+  DEFAULT_USER_PASSWORD: {
+    doc: 'Default password for generated users',
+    format: String,
+    env: 'DEFAULT_USER_PASSWORD',
+    default: '123456'
   }
 });
 
