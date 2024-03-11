@@ -46,24 +46,23 @@ class TSVOfferGenerator implements OfferGenerator{
     const previewImage = getRandomItem<string>(this.mockData.previewImages);
     const offerImages = Array.from({length:6}, () => getRandomItem<string>(this.mockData.offerImages)).join(';');
     const isPremium = String(generateRandomBoolean());
-    const isFavorite = false;
-    const rating = generateRandomValue(Rating.MIN, Rating.MAX, 1).toString();
+    const rating = generateRandomValue(Rating.MIN, Rating.MAX, 1);
     const type = getRandomItem<string>(this.mockData.types);
-    const rooms = generateRandomValue(Rooms.MIN, Rooms.MAX).toString();
-    const maxAdults = generateRandomValue(MaxAdults.MIN, MaxAdults.MAX).toString();
-    const price = generateRandomValue(Price.MIN, Price.MAX).toString();
+    const rooms = generateRandomValue(Rooms.MIN, Rooms.MAX);
+    const maxAdults = generateRandomValue(MaxAdults.MIN, MaxAdults.MAX);
+    const price = generateRandomValue(Price.MIN, Price.MAX);
     const goods = getRandomItems<string>(this.mockData.goods).join(';');
     const userName = getRandomItem<string>(this.mockData.userNames);
     const location = getRandomItem<Location>(this.mockData.locations);
     const email = getRandomItem<string>(this.mockData.emails);
     const avatar = getRandomItem<string>(this.mockData.avatars);
     const userType = getRandomItem<string>(this.mockData.userTypes);
-    const commentsCount = generateRandomValue(CommentsLength.MIN, CommentsLength.MAX).toString();
+    const commentsCount = generateRandomValue(CommentsLength.MIN, CommentsLength.MAX);
 
     return [title, description, date, city, previewImage,
-      offerImages, isPremium, isFavorite, rating,
+      offerImages, isPremium, rating,
       type, rooms, maxAdults, price, goods, userName,
-      email, avatar, userType, commentsCount, location
+      email, avatar, userType, commentsCount, location.latitude, location.longitude
     ].join('\t');
   }
 

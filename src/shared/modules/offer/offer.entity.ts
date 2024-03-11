@@ -1,6 +1,7 @@
-import {defaultClasses, modelOptions, prop, PropType} from '@typegoose/typegoose';
-import {Goods, ImageExtType, Location, OfferType, City} from '../../types/index.js';
+import {defaultClasses, modelOptions, prop, PropType, Ref} from '@typegoose/typegoose';
+import {Goods, ImageExtType, OfferType, City} from '../../types/index.js';
 import {UserEntity} from '../user/index.js';
+import {Location} from '../location/location.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {}
@@ -36,9 +37,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required:true, type: Boolean})
   public isPremium: boolean;
 
-  @prop({default: false, type: Boolean})
-  public isFavorite: boolean;
-
   @prop({default: 0, type: Number})
   public rating: number;
 
@@ -58,12 +56,12 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public goods: Goods[];
 
   @prop({required:true, ref: UserEntity})
-  public authorId: string;
+  public authorId: Ref<UserEntity>;
 
   @prop({default: 0, type: Number})
   public commentCount: number;
 
-  @prop({set: (value: Location) => JSON.stringify(value), get: (value: string) => JSON.parse(value) ,default: '', type: String})
+  @prop({required: true, type: Location, _id: false})
   public location: Location;
 }
 

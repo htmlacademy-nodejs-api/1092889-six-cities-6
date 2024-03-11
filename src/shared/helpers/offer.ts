@@ -10,7 +10,6 @@ const createOffer = (offerData: string): Offer => {
     previewImage,
     images,
     isPremium,
-    isFavorite,
     rating,
     type ,
     bedrooms,
@@ -31,7 +30,6 @@ const createOffer = (offerData: string): Offer => {
     email,
     avatar: avatar as ImageExtType,
     type: userType as UserType};
-
   return {
     title,
     description,
@@ -40,7 +38,6 @@ const createOffer = (offerData: string): Offer => {
     previewImage: previewImage as ImageExtType,
     images: images.split(';') as ImageExtType[],
     isPremium: (getBooleanFromString(isPremium)),
-    isFavorite: (getBooleanFromString(isFavorite)),
     rating: Number(rating),
     type: type as OfferType,
     bedrooms: Number(bedrooms),
@@ -49,8 +46,7 @@ const createOffer = (offerData: string): Offer => {
     goods: goods.split(';') as Goods[],
     author,
     comments: Number(comments),
-    location: {longitude: Number(longitude), latitude: Number(latitude)
-    }
+    location: {longitude: Number(longitude), latitude: Number(latitude)}
   };
 };
 

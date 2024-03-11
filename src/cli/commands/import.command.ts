@@ -43,6 +43,7 @@ class ImportCommand implements Command {
   }
 
   private async saveOffer(offer: Offer) {
+    console.log(offer);
     const user = await this.userService.findOrCreate({
       ...offer.author,
       password: this.config.get('DEFAULT_USER_PASSWORD')
@@ -61,7 +62,7 @@ class ImportCommand implements Command {
       this.config.get('DB_PASSWORD'),
       this.config.get('DB_ADDRESS'),
       this.config.get('DB_PORT'),
-      this.config.get('DB_PORT'));
+      this.config.get('DB_NAME'));
     this.salt = salt;
 
     await this.databaseClient.connect(uri);
