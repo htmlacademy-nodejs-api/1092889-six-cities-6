@@ -12,7 +12,6 @@ class PrivateRouteMiddleware implements Middleware {
         'PrivateRouteMiddleware'
       );
     }
-
     return next();
   }
 }

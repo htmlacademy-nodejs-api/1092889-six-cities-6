@@ -15,7 +15,6 @@ type Offer = {
   previewImage: ImageExtType,
   images: ImageExtType[],
   isPremium: boolean,
-  isFavorite: boolean,
   rating: number,
   type: OfferType,
   bedrooms: number,

@@ -9,7 +9,7 @@ interface OfferService {
   find(limit?: number): Promise<DocumentType<OfferEntity>[]>,
   findById(offerId: string): Promise<DocumentType<OfferEntity> | null>,
   findPremiumByCity(city: City): Promise<DocumentType<OfferEntity>[]>,
-  findFavorites(authorId: string): Promise<DocumentType<OfferEntity>[]>,
+  findFavorites(authorId: string): Promise<DocumentType<OfferEntity>[] | null>,
   updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>,
   deleteById(offer: string): Promise<DocumentType<OfferEntity> | null>,
   incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>,
