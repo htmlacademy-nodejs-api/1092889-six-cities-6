@@ -9,10 +9,11 @@
   ],
   "main": "main.rest.js",
   "scripts": {
-    "start": "npm run build && ./dist/main.cli.js",
+    "start": "npm run build && node ./dist/main.rest.js",
     "start:dev": "nodemon",
     "start:db": "docker compose --file ./docker-compose.dev.yml --env-file ./.env --project-name \"six-cities\" up -d",
-    "build": "npm run clean && npm run compile",
+    "cli": "./dist/main.cli.js",
+    "build": "npm run clean && npm run compile && chmod 700 ./dist/main.cli.js",
     "lint": "eslint src/ --ext .ts",
     "compile": "tsc -p tsconfig.json",
     "clean": "rimraf dist",

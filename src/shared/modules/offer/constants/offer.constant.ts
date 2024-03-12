@@ -3,4 +3,5 @@ const enum DefaultOffer {
   PREVIEW = 'default-previewOffer.jpg'
 }
 
+
 export {DefaultOffer};

@@ -6,7 +6,7 @@ import {DocumentType, mongoose, types} from '@typegoose/typegoose';
 import {OfferEntity} from './offer.entity.js';
 import {CreateOfferDto} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
-import {SortType} from '../../helpers/index.js';
+import {OFFER_IMAGES_COUNT, SortType} from '../../helpers/index.js';
 import {OfferCount} from './offer.constant.js';
 import {CommentService} from '../comment/index.js';
 import {DefaultOffer} from './constants/offer.constant.js';
@@ -20,7 +20,7 @@ class DefaultOfferService implements OfferService {
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const defaultImages = Array.from({length: 6}, () => DefaultOffer.IMAGE);
+    const defaultImages = Array.from({length: OFFER_IMAGES_COUNT}, () => DefaultOffer.IMAGE);
     const result = await this.offerModel.create({...dto, previewImage: DefaultOffer.PREVIEW, images: defaultImages});
     this.logger.info(`New offer has been created title: ${result.title} id: ${result.id}`);
 
@@ -73,6 +73,7 @@ class DefaultOfferService implements OfferService {
   public async findPremiumByCity(city: City): Promise<DocumentType<OfferEntity>[]> {
     const offers = await this.offerModel.aggregate([
       {$match: {city: city}},
+      {$match: {isPremium: true}},
       {
         $addFields:
           {isFavorite: false},

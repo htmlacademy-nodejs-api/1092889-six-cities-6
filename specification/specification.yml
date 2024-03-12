@@ -689,7 +689,7 @@ components:
           type: array
           items:
             type: string
-        authorId:
+        author:
           $ref: '#/components/schemas/user'
         commentsCount:
           type: number
@@ -727,7 +727,7 @@ components:
           type: string
         price:
           type: number
-        authorId:
+        author:
           $ref: '#/components/schemas/user'
         commentCount:
           type: number

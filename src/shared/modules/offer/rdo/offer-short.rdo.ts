@@ -35,9 +35,9 @@ class OfferShortRdo {
   @Expose()
   public price:number;
 
-  @Expose()
+  @Expose({name: 'authorId'})
   @Type(() => UserRdo)
-  public authorId: UserRdo;
+  public author: UserRdo;
 
   @Expose()
     commentsCount:number;

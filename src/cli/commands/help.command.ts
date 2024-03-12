@@ -12,11 +12,13 @@ class HelpCommand implements Command {
     console.info(`
       Программа для подготовки данных для REST API сервера.
         Пример:
-            cli.js --<command> [--arguments]
+            ./main.cli.js --<command> [--arguments]
+            или
+            npm run cli --<command> [--arguments]
         Команды:
             --version:                          ${chalk.green('# выводит информации о версии приложения.')}
             --help:                             ${chalk.green('# выводит информацию о списке поддерживаемых команд.')}
-            --import <path>                    ${chalk.green('# импортирует данные из TSV-файла.')}
+            --import <path>                     ${chalk.green('# импортирует данные из TSV-файла.')}
                                                 ${chalk.green('- <path> - путь и название файла Tsv')}
             --generate <n> <filepath> <url>     ${chalk.green('# генерирует произвольное количество тестовых наборов')}
                                                 ${chalk.green('- <n> - количество тестовых наборов')}

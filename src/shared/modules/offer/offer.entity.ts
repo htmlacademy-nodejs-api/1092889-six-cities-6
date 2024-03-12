@@ -40,7 +40,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({default: 0, type: Number})
   public rating: number;
 
-  @prop({required:true, type: () => [String], trim: true}, PropType.ARRAY)
+  @prop({required:true, type: String, trim: true})
   public type: OfferType;
 
   @prop({required:true, type: Number})
