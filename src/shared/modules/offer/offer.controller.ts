@@ -124,7 +124,7 @@ class OfferController extends BaseController {
     if(!isOwner) {
       throw new HttpError(StatusCodes.FORBIDDEN, 'Permissions required', 'OfferController');
     }
-    const offer = await this.offerService.updateById(offerId,body);
+    const offer = await this.offerService.updateById(offerId, body);
 
     this.ok(res, fillDTO(OfferDetailedRdo, offer));
   }
@@ -154,8 +154,8 @@ class OfferController extends BaseController {
       throw new HttpError(StatusCodes.FORBIDDEN, 'Permissions required', 'OfferController');
     }
 
-    const arr = files as Express.Multer.File[];
-    const updateDto = {images: arr.map((el) => el.filename as ImageExtType)};
+    const imageFiles = files as Express.Multer.File[];
+    const updateDto = {images: imageFiles.map((file) => file.filename as ImageExtType)};
     await this.offerService.updateById(offerId, updateDto);
     this.created(res, fillDTO(UploadImagesRdo, updateDto));
   }

@@ -10,7 +10,7 @@ const enum SortType {
 const DEFAULT_ENCODING = 'utf-8';
 const TRUE_STRING = 'true';
 const MEDIAN = 0.5;
-
+const OFFER_IMAGES_COUNT = 6;
 
 const fillDTO = <T, V>(someDto: ClassConstructor<T>, plainObject: V) => plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
 
@@ -52,6 +52,7 @@ export {
   reduceValidationErrors,
   getFullServerPath,
   getBooleanFromString,
+  OFFER_IMAGES_COUNT,
   SortType
 };
 

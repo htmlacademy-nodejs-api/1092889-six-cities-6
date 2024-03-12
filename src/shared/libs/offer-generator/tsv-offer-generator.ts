@@ -1,7 +1,13 @@
 import dayjs from 'dayjs';
 import {OfferGenerator} from './offer-generator.interface.js';
 import {Location, MockServerData} from '../../types/index.js';
-import {generateRandomValue, getRandomItem, getRandomItems, generateRandomBoolean} from '../../helpers/index.js';
+import {
+  generateRandomValue,
+  getRandomItem,
+  getRandomItems,
+  generateRandomBoolean,
+  OFFER_IMAGES_COUNT
+} from '../../helpers/index.js';
 
 const enum Price {
   MIN = 100,
@@ -44,7 +50,7 @@ class TSVOfferGenerator implements OfferGenerator{
       .toISOString();
     const city = getRandomItem<string>(this.mockData.cities);
     const previewImage = getRandomItem<string>(this.mockData.previewImages);
-    const offerImages = Array.from({length:6}, () => getRandomItem<string>(this.mockData.offerImages)).join(';');
+    const offerImages = Array.from({length:OFFER_IMAGES_COUNT}, () => getRandomItem<string>(this.mockData.offerImages)).join(';');
     const isPremium = String(generateRandomBoolean());
     const rating = generateRandomValue(Rating.MIN, Rating.MAX, 1);
     const type = getRandomItem<string>(this.mockData.types);

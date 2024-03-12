@@ -57,8 +57,8 @@ class PathTransformer {
             const uploadPath = FilesDirectoryRoute.UPLOAD;
             const serverHost = this.config.get('HOST');
             const serverPort = this.config.get('PORT');
-            current.map((el) => {
-              const rootPath = this.hasDefaultImage(el) ? staticPath : uploadPath;
+            current.map((image) => {
+              const rootPath = this.hasDefaultImage(image) ? staticPath : uploadPath;
               current[key] = `${getFullServerPath(serverHost, serverPort)}${rootPath}/${value}`;
             });
 

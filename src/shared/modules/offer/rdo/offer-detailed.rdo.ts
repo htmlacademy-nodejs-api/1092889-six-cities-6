@@ -48,9 +48,9 @@ class OfferDetailedRdo {
   @Expose()
   public goods: Goods[];
 
-  @Expose()
+  @Expose({name: 'authorId'})
   @Type(() => UserRdo)
-  public authorId: UserRdo;
+  public author: UserRdo;
 
   @Expose()
   public commentCount:number;
