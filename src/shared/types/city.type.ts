@@ -1,3 +1,9 @@
-type City = 'Paris' | 'Cologne' | 'Brussels' | 'Amsterdam' | 'Hamburg' | 'Dusseldorf';
+import {Location} from './location.type.js';
 
-export {City};
+type CityName = 'Paris' | 'Cologne' | 'Brussels' | 'Amsterdam' | 'Hamburg' | 'Dusseldorf';
+
+interface City {
+  cityName: CityName,
+  cityLocation: Location
+}
+export {CityName, City};

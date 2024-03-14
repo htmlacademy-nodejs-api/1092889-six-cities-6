@@ -1,6 +1,6 @@
 import {inject, injectable} from 'inversify';
 import {OfferService} from './types/offer-service.interface.js';
-import {City, Component} from '../../types/index.js';
+import {CityName, Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {DocumentType, mongoose, types} from '@typegoose/typegoose';
 import {OfferEntity} from './offer.entity.js';
@@ -70,9 +70,14 @@ class DefaultOfferService implements OfferService {
     return (await this.offerModel.exists({_id: documentId}) !== null);
   }
 
-  public async findPremiumByCity(city: City): Promise<DocumentType<OfferEntity>[]> {
+  public async findPremiumByCity(city: CityName): Promise<DocumentType<OfferEntity>[]> {
+    console.log(city);
     const offers = await this.offerModel.aggregate([
-      {$match: {city: city}},
+      {$addFields: {
+        cityName: '$city.cityName'
+      }},
+      {$match: {cityName: city}},
+      {$unset: 'cityName'},
       {$match: {isPremium: true}},
       {
         $addFields:

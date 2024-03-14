@@ -1,8 +1,8 @@
-import {City} from '../../../types/index.js';
+import {CityName} from '../../../types/index.js';
 import {Query} from 'express-serve-static-core';
 
 type RequestQuery = {
-  city?: City,
+  cityName?: CityName,
   limit?: number
 } | Query;
 

@@ -8,7 +8,7 @@ import {
   PrivateRouteMiddleware, UploadFileMiddleware,
   ValidateObjectIdMiddleware
 } from '../../libs/rest/index.js';
-import {City, Component, ImageExtType} from '../../types/index.js';
+import {CityName, Component, ImageExtType} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {OfferService} from './types/offer-service.interface.js';
 import {fillDTO} from '../../helpers/index.js';
@@ -174,10 +174,10 @@ class OfferController extends BaseController {
   }
 
   public async getPremium({query}: WithQueryOfferRequest, res: Response): Promise<void> {
-    if(!query.city){
+    if(!query.cityName){
       throw new HttpError(StatusCodes.BAD_REQUEST, 'City is not provided', 'OfferController');
     }
-    const offers = await this.offerService.findPremiumByCity(query.city as City);
+    const offers = await this.offerService.findPremiumByCity(query.cityName as CityName);
 
     this.ok(res, fillDTO(OfferShortRdo, offers));
   }
